@@ -237,19 +237,23 @@ const html = await client.shipments.downloadResponsiveLabel(created.id);
 await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
 ````
 
-````
+## İade Gönderisi Oluşturun
 
-5) Create a return shipment
 ```ts
 const returned = await client.shipments.createReturn(created.id, {
   willAccept: true,
-  providerServiceCode: 'SURAT_STANDART',
+  providerServiceCode: "SURAT_STANDART",
   count: 1,
   senderAddress: {
-    name: 'Warehouse', phone: '+905051234567', address1: 'Street 1', countryCode: 'TR', cityCode: '34', districtName: 'Kadikoy'
-  }
+    name: "Warehouse",
+    phone: "+905051234567",
+    address1: "Street 1",
+    countryCode: "TR",
+    cityCode: "34",
+    districtName: "Kadikoy",
+  },
 });
-````
+```
 
 ## Webhooklar
 
