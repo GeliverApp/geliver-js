@@ -244,14 +244,6 @@ const returned = await client.shipments.createReturn(created.id, {
   willAccept: true,
   providerServiceCode: "SURAT_STANDART",
   count: 1,
-  senderAddress: {
-    name: "Warehouse",
-    phone: "+905051234567",
-    address1: "Street 1",
-    countryCode: "TR",
-    cityCode: "34",
-    districtName: "Kadikoy",
-  },
 });
 ```
 
