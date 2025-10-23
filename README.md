@@ -320,7 +320,7 @@ await client.shipments.create({
 });
 ```
 
-## Notlar ve İpuçları (TR)
+## Notlar ve İpuçları (TR)
 
 - Ondalıklı sayılar (ör: length/weight) API'de string olarak döner; TypeScript tarafında `string | number` olarak işlenir.
 - Teklifler asenkron üretildiği için >= %99 tamamlanana kadar bekleyin (backend 99'da kalabilir); çok sık sorgulamayın (1 sn aralık yeterlidir).
