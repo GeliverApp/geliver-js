@@ -1,0 +1,193 @@
+
+        <html lang="tr">
+        <head>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta charset="utf-8">
+            <style>
+        body, * { font-family: 'Outfit', sans-serif; font-size: 2vh; box-sizing: border-box; margin: 0; padding: 0; }
+		.baslik-header-sol { display: flex; align-items: center; gap: 1vh; }
+		.baslik-header-orta { position: absolute; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; font-size: 2.5vh; font-weight: 800; color: #000; white-space: nowrap; }
+		.baslik-header-sag { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; text-align: right; font-size: 2vh; font-weight: 800; color: #000; }
+		.baslik-logo { height: 5.5vh; }
+		.baslik-glvlogo { height: 5.5vh; }
+		.baslik-custom-logo { height: 5vh; }
+        .table-border{border-collapse:collapse; border: 2px solid #333;}
+        .bilgilendirme-notu-alan{display:flex;justify-content:space-between;padding:1vh;border-bottom:0.3vh solid #000;flex-wrap:wrap;background-color:#fff;}
+        .bilgilendirme-notu-baslik{font-weight:bold;font-size:2vh;color:#000;text-align:left;}
+        .bilgilendirme-notu-icerik{font-weight:bold;font-size:1.6vh;color:#000;}
+        .yurtici-ozel-alan-alan{display:flex;justify-content:space-between;padding:0.3vh;border-bottom:0.3vh solid #000;flex-wrap:wrap;background-color:#fff;}
+        .yurtici-ozel-alan-barkod{margin-right:10px;}
+        .yurtici-ozel-alan-numara{font-size:2vh;font-weight:bold;color:#000;}
+        .barkod-alan{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1vh;font-size:1.6vh;font-weight:bold;border-bottom:0.3vh solid #000;background-color:#fff;}
+        .barkod-alan-icerik{font-size:2vh;color:#000;font-weight:bold;text-align:center;}
+        .barkod-alan-kod{font-weight:bold;font-size:2.2vh;color:#000;}
+        #barkod-container{width:70%;display:flex;justify-content:center;align-items:center;margin:10px 0;}
+        canvas{width:100%;height:auto;}
+        .gondericiadresi_kapsayici{border-bottom:0.3vh solid #000;padding:0.3vh;display:flex;flex-direction:column;justify-content:space-between;background-color:#fff;}
+        .gondericiadresi_baslik{font-weight:bold;font-size:2vh;color:#000;}
+        .gondericiadresi_adres{font-weight:700;font-size:2vh;color:#000;}
+        .aliciadresi_kapsayici{border-bottom:0.3vh solid #000;padding:0.3vh;display:flex;flex-direction:column;justify-content:space-between;background-color:#fff;}
+        .aliciadresi_baslik{font-weight:bold;font-size:2vh;color:#000;}
+        .aliciadresi_adres{font-size:2vh;color:#000;font-weight:bold;}
+        .desi-bilgisi-container{display:flex;flex-direction:column;border-bottom:0.3vh solid #000;width:100%;background-color:#fff; padding:0.3vh;}
+        .desi-bilgisi-baslik{font-weight:bold;font-size:2.5vh;text-align:center;color:#000;padding-top:0.2vh;text-transform:uppercase;}
+        .siparis-bilgisi-grid{display:flex;flex-direction:column;border-bottom:0.3vh solid #000;width:100%;background-color:#fff;}
+        .siparis-bilgisi-container{padding:0.3vh;display:flex;flex-direction:column;}
+        .siparis-bilgisi-order-info{display:flex;justify-content:center;align-items:center;width:100%;padding-top:1vh;}
+        .siparis-bilgisi-order-info-icerik{text-align:center;padding-bottom:1vh;padding-top:1vh;font-size:2vh;width:100%;font-weight:bold;color:#000;}
+        .siparis-bilgisi-order-info-baslik{display:block;font-weight:bold;font-size:2vh;color:#000;}
+        .urunler-container{padding:0.3vh;display:flex;flex-direction:column;border-bottom:0.3vh solid #000;background-color:#fff;}
+        .urunler-baslik{font-size:2vh;font-weight:bold;width:100%;text-align:center;}
+        .urunler-listesi{display:grid;grid-template-columns:1fr 1fr;gap:0.2vh;list-style-type:none;padding:0;margin:0;}
+        .urunler-listesi li{font-size:1.3vh;font-weight:600;word-wrap:break-word;overflow-wrap:break-word;white-space:normal;}
+        .kapida-odeme-alan{ padding: 0.3vh;display: flex;flex-direction: column;border-bottom: 0.3vh solid #000;background-color: #ffffff;}
+        .kapida-odeme-baslik{font-weight:bold;font-size:2vh;color:#000;}
+        .kapida-odeme-tutar{font-size:2vh;color:#000;font-weight:bold;}
+        .ozel-alan-icerik{text-align:center;padding:1vh;font-size:1.6vh;font-weight:bold;color:#000;background-color:#fff;border-bottom:0.3vh solid #000;}
+        .tarih-alan{text-align:center;padding:1vh;font-size:1.4vh;font-weight:bold;border-bottom:0.3vh solid #000;background-color:#fff;}
+        .hidden-section{display:none!important;}
+        li { font-size: 1vh; font-weight: 600; }
+        .customfield { text-align: center; padding: 1vh; font-size: 1.6vh; font-weight: bold; }
+        #barcode-container { width: 70%; margin: 10px auto; text-align: center; }
+        canvas { width: 100%; height: auto; }
+        span{ line-height: 1.35;}
+    
+        	#barcode-container { width: 70%; margin: 10px auto; text-align: center; }
+			canvas{width:100%;height:auto;}
+			.baslik-header > * { display: flex; justify-content: center; align-items: center; }
+			.baslik-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 0.3vh solid #000; padding: 0.7vh; background-color: #fff; position: relative;}
+			.label-container {overflow: hidden;display: flex;flex-direction: column;}
+			.baslik-glvlogo .baslik-logo { height: 4vh; }
+			</style>
+            <script src="https://cdn.jsdelivr.net/npm/bwip-js@2.1.2/dist/bwip-js.min.js"></script>
+            <script src="https://app.geliver.io/jslib/barcode.js"></script>
+        </head>
+        <body >
+			<div class="label-container">
+            <table class="table-border">
+                <tbody>
+                    <tr class="baslik">
+    <td>
+        <div class="baslik-header">
+            <div class="baslik-header-sol">
+                <img class="baslik-glvlogo" src="https://app.geliver.io/label_assets/glogoforlabelbold.png" alt="GELİVER Logo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:2.5vh; height:2.5vh; vertical-align:middle;">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+				</svg>
+                <img class="baslik-logo" src="https://app.geliver.io/label_assets/" alt="Provider Logo">
+            </div>
+            <div class="baslik-header-orta">
+                <img class="baslik-custom-logo" src="data:text/plain; charset=utf-8;base64," alt="Logo">
+            </div>
+            <div class="baslik-header-sag">
+                GELİVER <br> ENTEGRASYONU
+            </div>
+        </div>
+    </td>
+</tr><tr class="bilgilendirme-notu">
+                                                    <td>
+                                                        <div class="bilgilendirme-notu-alan">
+                                                            <div>
+                                                                <span class="bilgilendirme-notu-baslik">Geliver Kargo Şube Personeli Bilgilendirme Notu:</span><br>
+                                                                <span class="bilgilendirme-notu-icerik">Bu bir Geliver gönderisidir. Lütfen e-ticaret gönderi kabul ekranından faturalandırma yapınız. Müşteri listesi içerisinden Geliver sözleşmesini seçip, yukarıdaki sipariş kodunu giriş yaparak gönderi oluşturabilirsiniz.  Gönderi oluşturma adımında yaşanan herhangi bir sorunun çözümü için 0850 840 5245 numarasından destek alabilirsiniz.</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr><tr>
+                        <td>
+                            <div class="barkod-alan">
+                                <div class="barkod-alan-icerik">
+                                    <span class="barkod-alan-kod">SİPARİŞ KODU: </span><span id="order-code" class="barkod-alan-kod">99035444884</span>
+                                </div>
+                                <div id="barcode-container">
+                                    <canvas id="barcodeCanvas"></canvas>
+                                </div>
+                            </div>
+                        </td>
+                    </tr><tr class="gonderici-adresi">
+                            <td>
+                                <div class="gondericiadresi_kapsayici">
+                                    <div class="gondericiadresi_basliksatir">
+                                        <div>
+                                            <span class="gondericiadresi_baslik">GÖNDERİCİ (ACME Inc.)</span><br>
+                                        </div>
+                                        <span class="gondericiadresi_adres">Street 1 | Esenyurt, Istanbul, Türkiye <br>+905051234567</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr><tr class="alici-adresi">
+                                <td>
+                                    <div class="aliciadresi_kapsayici">
+                                        <div class="aliciadresi_basliksatir">
+                                            <div>
+                                                <span class="aliciadresi_baslik">ALICI (John Doe)</span><br>
+                                            </div>
+                                            <span class="aliciadresi_adres">Dest St 2 | Esenyurt, Istanbul, Türkiye<br>+905051234568</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr><tr class="desi-bilgisi">
+                    <td>
+                            <div class="desi-bilgisi-container">
+                                <span class="desi-bilgisi-baslik">TAHMİNİ PAKET DESİSİ: 1.00 desi</span>
+                            </div>
+                    </td>
+                </tr><tr class="ozel-alan">
+            <td>
+                <div class="ozel-alan-icerik">
+                    
+                </div>
+            </td>
+        </tr><tr class="tarih">
+            <td>
+                <div class="tarih-alan">
+                    22.10.2025 23:49:52
+                </div>
+            </td>
+        </tr>
+                </tbody>
+            </table>
+			</div>
+            <script>
+                function generateBarcode() {
+                    const canvas = document.getElementById('barcodeCanvas');
+                    if (!canvas) return;
+                    bwipjs.toCanvas(canvas, {
+                        bcid: 'code128',
+                        text: '99035444884',
+                        scale: 5,
+                        height: 4,
+                        includetext: false,
+                        textxalign: 'center',
+                        textfont: 'Outfit',
+                        textsize: 5
+                    });
+                    const yurticiCanvas = document.getElementById('yurticiBarcodeCanvas');
+                    if (yurticiCanvas) {
+                        bwipjs.toCanvas(yurticiCanvas, {
+                            bcid: 'code128',
+                            text: '233930',
+                            scale: 4,
+                            height: 4,
+                            includetext: true,
+                            textxalign: 'center',
+                            textfont: 'Outfit',
+                            textsize: 5
+                        });
+                    }
+                }
+                generateBarcode();
+                window.addEventListener('resize', generateBarcode);
+                window.print();
+                const orderCode = document.getElementById("order-code");
+                if(orderCode){
+                    const formattedCode = orderCode.textContent.replace(/(\d{3})(?=\d)/g, "$1 ");
+                    orderCode.textContent = formattedCode;
+                }
+            </script>
+        </body>
+        </html>
+    

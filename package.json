@@ -1,0 +1,23 @@
+{
+  "name": "@geliver/sdk",
+  "version": "0.1.0",
+  "description": "Geliver API SDK (Node.js, TypeScript)",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --version && echo 'Run tests with your preferred runner. Unit tests use mock transport.'"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
