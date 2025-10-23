@@ -90,6 +90,8 @@ const created = await client.shipments.createTest({
 
 1. Gönderici adresi oluşturma
 
+Her gönderici adresi için tek seferlik kullanılır. Gönderici ID'sini saklayınız.
+
 ```ts
 import { GeliverClient } from "@geliver/sdk";
 
