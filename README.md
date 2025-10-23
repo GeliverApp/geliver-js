@@ -3,8 +3,9 @@
 Geliver JS SDK — official TypeScript/Node.js client for Geliver Kargo Pazaryeri (Shipping Marketplace) API.
 Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu sağlar.
 
-Dokümantasyon (TR): Modeller ve endpoint detayları için https://docs.geliver.com
-Documentation (EN): For detailed models and endpoints, see https://docs.geliver.com
+• Dokümantasyon (TR/EN): https://docs.geliver.io
+
+---
 
 ## İçindekiler
 
@@ -13,24 +14,28 @@ Documentation (EN): For detailed models and endpoints, see https://docs.geliver.
 - Hızlı Başlangıç
 - Adım Adım
 - Örnekler
+- Modeller
+- Enum Kullanımı
 - Notlar ve İpuçları
-
-Türkçe (TR)
-
-- 0. Geliver Kargo API tokenı alın (https://app.geliver.io/apitokens adresinden)
-- Aşağıda İngilizce adımların Türkçe açıklamaları yer alır. Kod örnekleri İngilizce kalacaktır.
-- 1. Gönderici adresi oluşturun (createSender)
-- 2. Gönderi oluşturun; alıcıyı ya ID ile (recipientAddressID) ya da adres nesnesi ile (recipientAddress) verin
-- 3. Teklifler tamamlanana kadar bekleyin ve en ucuz/istediğiniz teklifi kabul edin (acceptOffer)
-- 4. Barkod, takip numarası, etiket URL’lerini yanıt içindeki gönderi (shipment) nesnesinden alın
-- 5. Takip numarası hemen oluşmazsa test gönderilerinde her GET isteği durumun bir adım ilerlemesini sağlar; prod'da webhook kurun
-- 6. Etiket dosyasını (PDF) ve dinamik etiketi (HTML) indirin
-- 7. İade gönderisi oluşturmak isterseniz createReturn fonksiyonunu kullanın
+- Diğer Örnekler (JS/TS)
+- Sağlayıcı Hesapları (Kendi kargo anlaşmanız)
 
 ## Kurulum
 
 - Projenize ekleyip yerelde derleyin (açık kaynak yayın planlanıyor):
   - `cd sdks/js && npm i && npm run build`
+
+## Akış (TR)
+
+1. Geliver Kargo API tokenı alın (https://app.geliver.io/apitokens adresinden)
+   Aşağıda İngilizce adımların Türkçe açıklamaları yer alır. Kod örnekleri İngilizce kalacaktır.
+2. Gönderici adresi oluşturun (createSender)
+3. Gönderi oluşturun; alıcıyı ya ID ile (recipientAddressID) ya da adres nesnesi ile (recipientAddress) verin
+4. Teklifler tamamlanana kadar bekleyin ve en ucuz/istediğiniz teklifi kabul edin (acceptOffer)
+5. Barkod, takip numarası, etiket URL’lerini yanıt içindeki gönderi (shipment) nesnesinden alın
+6. Takip numarası hemen oluşmazsa test gönderilerinde her GET isteği durumun bir adım ilerlemesini sağlar; prod'da webhook kurun
+   -7. Etiket dosyasını (PDF) ve dinamik etiketi (HTML) indirin
+7. İade gönderisi oluşturmak isterseniz createReturn fonksiyonunu kullanın
 
 ## Yapılandırma
 
@@ -47,16 +52,37 @@ import { GeliverClient } from "@geliver/sdk";
 const client = new GeliverClient({ token: process.env.GELIVER_TOKEN! });
 
 const sender = await client.addresses.createSender({
-  name: "ACME Inc.", email: "ops@acme.test", address1: "Street 1",
-  countryCode: "TR", cityName: "Istanbul", cityCode: "34",
-  districtName: "Esenyurt", districtID: 107605, zip: "34020"
+  name: "ACME Inc.",
+  email: "ops@acme.test",
+  address1: "Street 1",
+  countryCode: "TR",
+  cityName: "Istanbul",
+  cityCode: "34",
+  districtName: "Esenyurt",
+  districtID: 107605,
+  zip: "34020",
 });
 
 const created = await client.shipments.createTest({
   sourceCode: "API",
   senderAddressID: sender.id,
-  recipientAddress: { name: "John Doe", email: "john@example.com", address1: "Dest St 2", countryCode: "TR", cityName: "Istanbul", cityCode: "34", districtName: "Kadikoy", districtID: 100000, zip: "34000" },
-  length: 10, width: 10, height: 10, distanceUnit: "cm", weight: 1, massUnit: "kg"
+  recipientAddress: {
+    name: "John Doe",
+    email: "john@example.com",
+    address1: "Dest St 2",
+    countryCode: "TR",
+    cityName: "Istanbul",
+    cityCode: "34",
+    districtName: "Kadikoy",
+    districtID: 100000,
+    zip: "34000",
+  },
+  length: 10,
+  width: 10,
+  height: 10,
+  distanceUnit: "cm",
+  weight: 1,
+  massUnit: "kg",
 });
 ```
 
@@ -113,11 +139,15 @@ const created = await client.shipments.create({
 // Etiketler bazı akışlarda create sonrasında hazır olabilir; varsa hemen indirin
 if ((created as any).labelURL) {
   const prePdf = await client.shipments.downloadLabel(created.id);
-  await import('node:fs/promises').then(fs => fs.writeFile('label_pre.pdf', prePdf));
+  await import("node:fs/promises").then((fs) =>
+    fs.writeFile("label_pre.pdf", prePdf)
+  );
 }
 if ((created as any).responsiveLabelURL) {
   const preHtml = await client.shipments.downloadResponsiveLabel(created.id);
-  await import('node:fs/promises').then(fs => fs.writeFile('label_pre.html', preHtml));
+  await import("node:fs/promises").then((fs) =>
+    fs.writeFile("label_pre.html", preHtml)
+  );
 }
 
 // Teklifler create yanıtında hazır olabilir; önce onu kontrol edin
@@ -128,7 +158,8 @@ if (!(offers && (offers.percentageCompleted >= 99 || offers.cheapest))) {
   while (!done) {
     const s = await client.shipments.get(created.id);
     offers = (s as any).offers;
-    if (offers && (offers.percentageCompleted >= 99 || offers.cheapest)) done = true;
+    if (offers && (offers.percentageCompleted >= 99 || offers.cheapest))
+      done = true;
     else await new Promise((r) => setTimeout(r, 1000));
   }
 }
@@ -145,7 +176,7 @@ console.log("Tracking URL:", tx.shipment?.trackingUrl);
 // (barkod, labelURL ve varsa takip linkleri dahil).
 ```
 
-## Alıcıyı ID ile oluşturma (recipientAddressID)
+## Alıcı ID'si ile oluşturma (recipientAddressID)
 
 ```ts
 // Seçenek B: Alıcıyı mevcut adres ID'si ile gönderin
@@ -177,13 +208,15 @@ const createdDirect = await client.shipments.create({
 // Etiket hazırsa, recipientAddressID ile oluşturulan gönderide de hemen indirilebilir
 if ((createdDirect as any).labelURL) {
   const prePdf2 = await client.shipments.downloadLabel(createdDirect.id);
-  await import('node:fs/promises').then(fs => fs.writeFile('label_pre_direct.pdf', prePdf2));
+  await import("node:fs/promises").then((fs) =>
+    fs.writeFile("label_pre_direct.pdf", prePdf2)
+  );
 }
 ```
 
 ## Test gönderilerinde durum ilerletme ve etiket indirme
 
-```ts
+````ts
 // Test gönderilerinde her GET /shipments isteği kargo durumunu bir adım ilerletir; prod'da webhook veya kendi sisteminizin kontrollerini tercih edin.
 for (let i = 0; i < 5; i++) {
   await new Promise(r => setTimeout(r, 1000));
@@ -258,11 +291,6 @@ const list = await client.webhooks.list();
 - Çalıştırılabilir örnek akış için: `sdks/js/examples/full-flow.ts`.
 - Üretilmiş tipler `@geliver/sdk` altında (kaynak: `src/models`).
 
-[![Geliver Kargo Pazaryeri](https://geliver.io/geliverlogo.png)](https://geliver.io/)
-Geliver Kargo Pazaryeri: https://geliver.io/
-
-Etiketler (Tags): node, typescript, javascript, sdk, api-client, geliver, kargo, kargo-pazaryeri, shipping, e-commerce, turkey
-
 ### Manuel takip kontrolü (isteğe bağlı)
 
 ```ts
@@ -274,18 +302,10 @@ async function checkTracking(shipmentId: string) {
 await checkTracking(created.id);
 ```
 
-Modeller
+## Modeller
 
 - Shipment, Transaction, TrackingStatus, Address, ParcelTemplate, ProviderAccount, Webhook, Offer, PriceQuote and more.
 - Full list is generated from OpenAPI: `src/models/index.ts`.
-
-Türkçe (TR) Kısa Özet
-
-- Kimlik Doğrulama: `Authorization: Bearer {token}`
-- Temel URL: `https://api.geliver.io/api/v1`
-- Teklif → Satın Alma: Gönderi oluştur (offers), teklifleri bekle, `transactions` ile kabul et
-- Etiket: `shipment.labelURL` (PDF) ve `shipment.responsiveLabelURL` (HTML)
-- Takip: `shipment.trackingNumber` ve `shipment.trackingStatus`
 
 ### Enum Kullanımı (TR)
 
@@ -302,7 +322,7 @@ await client.shipments.create({
 });
 ```
 
-Notlar ve İpuçları (TR)
+## Notlar ve İpuçları (TR)
 
 - Ondalıklı sayılar (ör: length/weight) API'de string olarak döner; TypeScript tarafında `string | number` olarak işlenir.
 - Teklifler asenkron üretildiği için >= %99 tamamlanana kadar bekleyin (backend 99'da kalabilir); çok sık sorgulamayın (1 sn aralık yeterlidir).
@@ -329,7 +349,7 @@ const cities = await client.geo.listCities("TR");
 const districts = await client.geo.listDistricts("TR", "34");
 ```
 
-- Sağlayıcı Hesapları
+## Sağlayıcı Hesapları
 
 ```ts
 // Create provider account
@@ -352,7 +372,7 @@ await client.providers.deleteAccount(createdAcc.id, {
 });
 ```
 
-- Kargo Şablonları
+## Kargo Şablonları (Kendi kargo anlaşmanız)
 
 ```ts
 // Create template
@@ -371,10 +391,9 @@ const tpls = await client.parcelTemplates.list();
 await client.parcelTemplates.delete(tpl.id);
 ```
 
-English (EN) Quick Guide
-- 1) Create sender address
-- 2) Create shipment via inline recipient or recipientAddressID
-- 3) Poll offers until `>= 99%` or a cheapest offer exists, then accept
-- 4) Transaction includes updated Shipment (barcode, labelURL, tracking)
-- 5) For test shipments only, call GET a few times to advance status; in production, use webhooks
-- 6) Download labels (PDF via `labelURL`, HTML via `responsiveLabelURL`)
+---
+
+[![Geliver Kargo Pazaryeri](https://geliver.io/geliverlogo.png)](https://geliver.io/)
+Geliver Kargo Pazaryeri: https://geliver.io/
+
+Etiketler (Tags): node, typescript, javascript, sdk, api-client, geliver, kargo, kargo-pazaryeri, shipping, e-commerce, turkey
