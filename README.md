@@ -248,6 +248,7 @@ const returned = await client.shipments.createReturn(created.id, {
 ```
 
 Not:
+- `providerServiceCode` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin sağlayıcısı kullanılır; isterseniz bu alanı vererek değiştirebilirsiniz.
 - `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; isterseniz `senderAddress` vererek değiştirebilirsiniz.
 
 ## Webhooklar
