@@ -247,6 +247,9 @@ const returned = await client.shipments.createReturn(created.id, {
 });
 ```
 
+Not:
+- `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; isterseniz `senderAddress` vererek değiştirebilirsiniz.
+
 ## Webhooklar
 
 ```ts
@@ -347,7 +350,7 @@ const cities = await client.geo.listCities("TR");
 const districts = await client.geo.listDistricts("TR", "34");
 ```
 
-## Sağlayıcı Hesapları
+## Sağlayıcı Hesapları
 
 ```ts
 // Create provider account

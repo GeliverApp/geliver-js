@@ -41,5 +41,6 @@ export interface CreateReturnShipmentRequest {
   willAccept: boolean;
   providerServiceCode: string;
   count: number;
-  senderAddress: Pick<Address, 'name' | 'phone' | 'address1' | 'countryCode' | 'cityCode' | 'districtName'>;
+  // Optional: backend will default to original shipment's recipient address; set to override
+  senderAddress?: Pick<Address, 'name' | 'phone' | 'address1' | 'countryCode' | 'cityCode' | 'districtName'>;
 }
