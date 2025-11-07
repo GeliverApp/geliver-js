@@ -24,8 +24,8 @@ export type RecipientSpecifier =
 export interface CreateShipmentRequestBase {
   sourceCode: string; // "API"
   senderAddressID: string;
-  length?: number; width?: number; height?: number; distanceUnit?: string;
-  weight?: number; massUnit?: string;
+  length?: string; width?: string; height?: string; distanceUnit?: string;
+  weight?: string; massUnit?: string;
   providerServiceCode?: string; // optional direct provider
   test?: boolean; // per-shipment test flag
 }
@@ -33,7 +33,7 @@ export interface CreateShipmentRequestBase {
 export type CreateShipmentRequest = CreateShipmentRequestBase & RecipientSpecifier;
 
 export interface UpdatePackageRequest {
-  height?: number; width?: number; length?: number; distanceUnit?: string; weight?: number; massUnit?: string;
+  height?: string; width?: string; length?: string; distanceUnit?: string; weight?: string; massUnit?: string;
 }
 
 export interface CreateReturnShipmentRequest {

@@ -2,10 +2,10 @@ import { HttpClient } from '../http.js';
 
 export interface PriceListParams {
   paramType: 'parcel';
-  length: number;
-  width: number;
-  height: number;
-  weight: number;
+  length: string;
+  width: string;
+  height: string;
+  weight: string;
   distanceUnit?: string;
   massUnit?: string;
 }

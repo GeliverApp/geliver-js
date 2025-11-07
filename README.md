@@ -77,14 +77,17 @@ const created = await client.shipments.createTest({
     districtID: 100000,
     zip: "34000",
   },
-  length: 10,
-  width: 10,
-  height: 10,
+  // Request dimensions/weight must be strings
+  length: '10.0',
+  width: '10.0',
+  height: '10.0',
   distanceUnit: "cm",
-  weight: 1,
+  weight: '1.0',
   massUnit: "kg",
 });
 ```
+
+Canlı ortamda `client.shipments.createTest(...)` yerine `client.shipments.create(...)` kullanın.
 
 ## Türkçe Akış (TR)
 
@@ -130,27 +133,15 @@ const created = await client.shipments.create({
     districtID: 100000,
     zip: "34000",
   },
-  length: 10,
-  width: 10,
-  height: 10,
+  length: '10.0',
+  width: '10.0',
+  height: '10.0',
   distanceUnit: "cm",
-  weight: 1,
+  weight: '1.0',
   massUnit: "kg",
 });
 
-// Etiketler bazı akışlarda create sonrasında hazır olabilir; varsa hemen indirin
-if ((created as any).labelURL) {
-  const prePdf = await client.shipments.downloadLabel(created.id);
-  await import("node:fs/promises").then((fs) =>
-    fs.writeFile("label_pre.pdf", prePdf)
-  );
-}
-if ((created as any).responsiveLabelURL) {
-  const preHtml = await client.shipments.downloadResponsiveLabel(created.id);
-  await import("node:fs/promises").then((fs) =>
-    fs.writeFile("label_pre.html", preHtml)
-  );
-}
+// Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 
 // Teklifler create yanıtında hazır olabilir; önce onu kontrol edin
 let offers: any = (created as any).offers;
@@ -199,21 +190,15 @@ const createdDirect = await client.shipments.create({
   senderAddressID: sender.id,
   recipientAddressID: recipient.id,
   providerServiceCode: "MNG_STANDART",
-  length: 10,
-  width: 10,
-  height: 10,
+  length: '10.0',
+  width: '10.0',
+  height: '10.0',
   distanceUnit: "cm",
-  weight: 1,
+  weight: '1.0',
   massUnit: "kg",
 });
 
-// Etiket hazırsa, recipientAddressID ile oluşturulan gönderide de hemen indirilebilir
-if ((createdDirect as any).labelURL) {
-  const prePdf2 = await client.shipments.downloadLabel(createdDirect.id);
-  await import("node:fs/promises").then((fs) =>
-    fs.writeFile("label_pre_direct.pdf", prePdf2)
-  );
-}
+// Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de.
 ```
 
 ## Test gönderilerinde durum ilerletme ve etiket indirme
@@ -227,14 +212,16 @@ for (let i = 0; i < 5; i++) {
 const latest = await client.shipments.get(created.id);
 console.log('Final tracking status:', (latest as any).trackingStatus?.trackingStatusCode, (latest as any).trackingStatus?.trackingSubStatusCode);
 
-// 4) Download labels
+// 4) Download labels (teklif kabulünden sonra Transaction.Shipment URL'leriyle)
 ```ts
-const pdfBytes = await client.shipments.downloadLabel(created.id);
-// dosyaya kaydet
-await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdfBytes));
-
-const html = await client.shipments.downloadResponsiveLabel(created.id);
-await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
+if (tx.shipment?.labelURL) {
+  const pdfBytes = await client.shipments.downloadLabelByUrl(tx.shipment.labelURL);
+  await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdfBytes));
+}
+if (tx.shipment?.responsiveLabelURL) {
+  const html = await client.shipments.downloadResponsiveLabelByUrl(tx.shipment.responsiveLabelURL);
+  await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
+}
 ````
 
 ## İade Gönderisi Oluşturun
@@ -329,7 +316,8 @@ await client.shipments.create({
 - Ondalıklı sayılar (ör: length/weight) API'de string olarak döner; TypeScript tarafında `string | number` olarak işlenir.
 - Teklifler asenkron üretildiği için >= %99 tamamlanana kadar bekleyin (backend 99'da kalabilir); çok sık sorgulamayın (1 sn aralık yeterlidir).
 - İade (return) için `createReturn` kullanabilirsiniz.
-- Test gönderileri için `client.shipments.create({ ..., test: true })` veya `createTest(...)` yardımcı fonksiyonunu kullanın.
+- Test gönderileri için `client.shipments.create({ ..., test: true })` veya `createTest(...)` yardımcı fonksiyonunu kullanın; canlı ortamda `createTest` yerine `client.shipments.create(...)` çağırın.
+- Takip numarası ile takip URL'si bazı kargo firmalarında teklif kabulünün hemen ardından oluşmayabilir. Paketi kargo şubesine teslim ettiğinizde veya kargo sizden teslim aldığında bu alanlar tamamlanır. Webhooklar ile değerleri otomatik çekebilir ya da teslimden sonra `shipment` GET isteği yaparak güncel bilgileri alabilirsiniz.
 - İlçe seçimi: districtID (number) kullanmanız önerilir. districtName her zaman kesin eşleşmeyebilir.
 - Şehir/İlçe seçimi: cityCode ve cityName bir arada veya ayrı kullanılabilir; eşleşme açısından cityCode daha güvenlidir. Şehir/ilçe bilgilerini API ile alabilirsiniz:
 

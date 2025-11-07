@@ -19,26 +19,20 @@ const shipment = await client.shipments.createTest({
     address1: 'Dest St 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
     districtName: 'Esenyurt', districtID: 107605, zip: '34020'
   },
-  length: 10, width: 10, height: 10, distanceUnit: 'cm', weight: 1, massUnit: 'kg',
+  // Request dimensions/weight must be strings
+  length: '10.0', width: '10.0', height: '10.0', distanceUnit: 'cm', weight: '1.0', massUnit: 'kg',
 });
 // Etiketler bazı akışlarda create sonrasında hazır olabilir; varsa hemen indirin
 await mkdir('sdks/output', { recursive: true });
-if (shipment.labelURL) {
-  const prePdf = await client.shipments.downloadLabel(shipment.id);
-  await writeFile('sdks/output/label-node-pre.pdf', prePdf);
-}
-if (shipment.responsiveLabelURL) {
-  const preHtml = await client.shipments.downloadResponsiveLabel(shipment.id);
-  await writeFile('sdks/output/label-node-pre.html', preHtml);
-}
+// Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 // Teklifler create yanıtında hazır olabilir; önce onu kontrol edin
 let offers = shipment.offers;
-if (!(offers && (offers.percentageCompleted >= 99 || offers.cheapest))) {
+if (!(offers && (offers.percentageCompleted == 100 || offers.cheapest))) {
   const start = Date.now();
   while (true) {
     const s = await client.shipments.get(shipment.id);
     offers = s.offers;
-    if (offers && (offers.percentageCompleted >= 99 || offers.cheapest)) break;
+    if (offers && (offers.percentageCompleted == 100 || offers.cheapest)) break;
     if (Date.now() - start > 60000) throw new Error('Timed out waiting for offers');
     await new Promise(r => setTimeout(r, 1000));
   }

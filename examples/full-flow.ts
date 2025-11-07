@@ -21,27 +21,20 @@ async function main() {
       address1: 'Dest St 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
       districtName: 'Esenyurt', districtID: 107605, zip: '34020'
     },
-    length: 10, width: 10, height: 10, distanceUnit: 'cm', weight: 1, massUnit: 'kg',
+  // Request dimensions/weight must be strings
+  length: '10.0', width: '10.0', height: '10.0', distanceUnit: 'cm', weight: '1.0', massUnit: 'kg',
   } as Omit<CreateShipmentRequest, 'test'>);
 
-  // Etiketler bazı akışlarda create sonrasında hazır olabilir; varsa hemen indirin
-  if ((shipment as any).labelURL) {
-    const prePdf = await client.shipments.downloadLabel(shipment.id as string);
-    await import('node:fs/promises').then(fs => fs.writeFile('label_pre.pdf', prePdf));
-  }
-  if ((shipment as any).responsiveLabelURL) {
-    const preHtml = await client.shipments.downloadResponsiveLabel(shipment.id as string);
-    await import('node:fs/promises').then(fs => fs.writeFile('label_pre.html', preHtml));
-  }
+  // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 
   // Teklifler create yanıtında hazır olabilir; önce onu kontrol edin
   let offers: any = (shipment as any).offers;
-  if (!(offers && (offers.percentageCompleted >= 99 || offers.cheapest))) {
+  if (!(offers && (offers.percentageCompleted == 100 || offers.cheapest))) {
     const start = Date.now();
     while (true) {
       const s = await client.shipments.get(shipment.id as string) as any;
       offers = s.offers;
-      if (offers && (offers.percentageCompleted >= 99 || offers.cheapest)) break;
+      if (offers && (offers.percentageCompleted == 100 || offers.cheapest)) break;
       if (Date.now() - start > 60000) throw new Error('Timed out waiting for offers');
       await new Promise(r => setTimeout(r, 1000));
     }
@@ -49,10 +42,10 @@ async function main() {
   const cheapest = offers.cheapest;
   const tx = await client.transactions.acceptOffer(cheapest.id);
   console.log('Transaction', tx.id, tx.isPayed);
-  console.log('Barcode:', (tx as any).shipment?.barcode);
-  console.log('Tracking number:', (tx as any).shipment?.trackingNumber);
-  console.log('Label URL:', (tx as any).shipment?.labelURL);
-  console.log('Tracking URL:', (tx as any).shipment?.trackingUrl);
+  console.log('Barcode:', tx.shipment?.barcode);
+  console.log('Tracking number:', tx.shipment?.trackingNumber);
+  console.log('Label URL:', tx.shipment?.labelURL);
+  console.log('Tracking URL:', tx.shipment?.trackingUrl);
 
   // Test gönderilerinde her GET /shipments çağrısı kargo durumunu bir adım ilerletir; prod'da webhook veya kendi sisteminiz önerilir.
   for (let i = 0; i < 5; i++) {
@@ -67,10 +60,14 @@ async function main() {
   console.log('Status:', latest?.trackingStatus?.trackingStatusCode, latest?.trackingStatus?.trackingSubStatusCode);
 
   // Download labels
-  const pdf = await client.shipments.downloadLabel(shipment.id as string);
-  await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdf));
-  const html = await client.shipments.downloadResponsiveLabel(shipment.id as string);
-  await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
+  if (tx.shipment?.labelURL) {
+    const pdf = await client.shipments.downloadLabelByUrl(tx.shipment.labelURL);
+    await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdf));
+  }
+  if (tx.shipment?.responsiveLabelURL) {
+    const html = await client.shipments.downloadResponsiveLabelByUrl(tx.shipment.responsiveLabelURL);
+    await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
+  }
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
