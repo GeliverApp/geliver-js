@@ -11,6 +11,7 @@ export class ShipmentsResource {
    */
   create(body: CreateShipmentRequest): Promise<Shipment> {
     const payload: any = { ...body };
+    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'API';
     for (const k of ['length','width','height','weight']) {
       if (payload[k] !== undefined && payload[k] !== null) payload[k] = String(payload[k]);
     }
@@ -19,7 +20,10 @@ export class ShipmentsResource {
 
   /** Create a test shipment easily without modifying your body. */
   createTest(body: Omit<CreateShipmentRequest, 'test'>): Promise<Shipment> {
-    return this.http.request('POST', '/shipments', { body: { ...(body as any), test: true } });
+    const payload: any = { ...(body as any) };
+    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'API';
+    payload.test = true;
+    return this.http.request('POST', '/shipments', { body: payload });
   }
 
   /** Get shipment by ID. */

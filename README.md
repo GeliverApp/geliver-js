@@ -64,7 +64,6 @@ const sender = await client.addresses.createSender({
 });
 
 const created = await client.shipments.createTest({
-  sourceCode: "API",
   senderAddressID: sender.id,
   recipientAddress: {
     name: "John Doe",
@@ -78,11 +77,11 @@ const created = await client.shipments.createTest({
     zip: "34000",
   },
   // Request dimensions/weight must be strings
-  length: '10.0',
-  width: '10.0',
-  height: '10.0',
+  length: "10.0",
+  width: "10.0",
+  height: "10.0",
   distanceUnit: "cm",
-  weight: '1.0',
+  weight: "1.0",
   massUnit: "kg",
 });
 ```
@@ -120,7 +119,6 @@ const sender = await client.addresses.createSender({
 ```ts
 // Seçenek A: Alıcıyı adres nesnesiyle (inline) gönderin
 const created = await client.shipments.create({
-  sourceCode: "API",
   senderAddressID: sender.id,
   recipientAddress: {
     name: "John Doe",
@@ -133,11 +131,11 @@ const created = await client.shipments.create({
     districtID: 100000,
     zip: "34000",
   },
-  length: '10.0',
-  width: '10.0',
-  height: '10.0',
+  length: "10.0",
+  width: "10.0",
+  height: "10.0",
   distanceUnit: "cm",
-  weight: '1.0',
+  weight: "1.0",
   massUnit: "kg",
 });
 
@@ -145,13 +143,13 @@ const created = await client.shipments.create({
 
 // Teklifler create yanıtında hazır olabilir; önce onu kontrol edin
 let offers: any = (created as any).offers;
-if (!(offers && (offers.percentageCompleted >= 99 || offers.cheapest))) {
-  // Hazır değilse, >= %99 olana kadar 1 sn aralıkla sorgulayın (backend 99'da kalabilir)
+if (!(offers && (offers.percentageCompleted == 100 || offers.cheapest))) {
+  // Hazır değilse, %100 olana kadar 1 sn aralıkla sorgulayın
   let done = false;
   while (!done) {
     const s = await client.shipments.get(created.id);
     offers = (s as any).offers;
-    if (offers && (offers.percentageCompleted >= 99 || offers.cheapest))
+    if (offers && (offers.percentageCompleted == 100 || offers.cheapest))
       done = true;
     else await new Promise((r) => setTimeout(r, 1000));
   }
@@ -186,15 +184,14 @@ const recipient = await client.addresses.createRecipient({
 });
 
 const createdDirect = await client.shipments.create({
-  sourceCode: "API",
   senderAddressID: sender.id,
   recipientAddressID: recipient.id,
   providerServiceCode: "MNG_STANDART",
-  length: '10.0',
-  width: '10.0',
-  height: '10.0',
+  length: "10.0",
+  width: "10.0",
+  height: "10.0",
   distanceUnit: "cm",
-  weight: '1.0',
+  weight: "1.0",
   massUnit: "kg",
 });
 
@@ -235,6 +232,7 @@ const returned = await client.shipments.createReturn(created.id, {
 ```
 
 Not:
+
 - `providerServiceCode` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin sağlayıcısı kullanılır; isterseniz bu alanı vererek değiştirebilirsiniz.
 - `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; isterseniz `senderAddress` vererek değiştirebilirsiniz.
 
@@ -302,7 +300,6 @@ await checkTracking(created.id);
 // TypeScript tarafında enumlar string literal union olarak gelir
 // Aşağıdaki alanlar için sadece geçerli değerleri kullanın (IDE otomatik tamamlar)
 await client.shipments.create({
-  sourceCode: "API",
   senderAddressID: sender.id,
   recipientAddressID: recipient.id,
   distanceUnit: "cm", // ShipmentDistanceUnit
@@ -314,7 +311,7 @@ await client.shipments.create({
 ## Notlar ve İpuçları (TR)
 
 - Ondalıklı sayılar (ör: length/weight) API'de string olarak döner; TypeScript tarafında `string | number` olarak işlenir.
-- Teklifler asenkron üretildiği için >= %99 tamamlanana kadar bekleyin (backend 99'da kalabilir); çok sık sorgulamayın (1 sn aralık yeterlidir).
+- Teklifler asenkron üretildiği için %100 tamamlanana kadar bekleyin; çok sık sorgulamayın (1 sn aralık yeterlidir).
 - İade (return) için `createReturn` kullanabilirsiniz.
 - Test gönderileri için `client.shipments.create({ ..., test: true })` veya `createTest(...)` yardımcı fonksiyonunu kullanın; canlı ortamda `createTest` yerine `client.shipments.create(...)` çağırın.
 - Takip numarası ile takip URL'si bazı kargo firmalarında teklif kabulünün hemen ardından oluşmayabilir. Paketi kargo şubesine teslim ettiğinizde veya kargo sizden teslim aldığında bu alanlar tamamlanır. Webhooklar ile değerleri otomatik çekebilir ya da teslimden sonra `shipment` GET isteği yaparak güncel bilgileri alabilirsiniz.

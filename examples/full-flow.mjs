@@ -13,12 +13,13 @@ const sender = await client.addresses.createSender({
 });
 // Inline recipientAddress (adres kaydı oluşturmadan) 
 const shipment = await client.shipments.createTest({
-  sourceCode: 'API', senderAddressID: sender.id,
+  senderAddressID: sender.id,
   recipientAddress: {
     name: 'John Doe', email: 'john@example.com', phone: '+905051234568',
     address1: 'Dest St 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
     districtName: 'Esenyurt', districtID: 107605, zip: '34020'
   },
+  order: { orderNumber: 'ABC12333322', sourceIdentifier: 'https://magazaadresiniz.com', totalAmount: '150', totalAmountCurrency: 'TL' },
   // Request dimensions/weight must be strings
   length: '10.0', width: '10.0', height: '10.0', distanceUnit: 'cm', weight: '1.0', massUnit: 'kg',
 });
@@ -50,11 +51,11 @@ if (tx.shipment?.responsiveLabelURL) {
 }
 
 // Test gönderilerinde her GET /shipments isteği kargo durumunu bir adım ilerletir.
-// Üretimde bu şekilde polling yapmayın; webhook veya kendi sisteminizin periyodik kontrollerini kullanın.
-for (let i = 0; i < 5; i++) {
+// Canlıda bu şekilde polling yapmayın; webhook veya kendi sisteminizin periyodik kontrollerini kullanın.
+/*for (let i = 0; i < 5; i++) {
   await new Promise(r => setTimeout(r, 1000));
   await client.shipments.get(shipment.id);
-}
+}*/
 const finalStatus = await client.shipments.get(shipment.id);
 console.log('Final tracking status:', finalStatus.trackingStatus?.trackingStatusCode, finalStatus.trackingStatus?.trackingSubStatusCode);
 console.log('done');

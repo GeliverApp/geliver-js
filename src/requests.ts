@@ -22,12 +22,18 @@ export type RecipientSpecifier =
   | { recipientAddress: Address };
 
 export interface CreateShipmentRequestBase {
-  sourceCode: string; // "API"
   senderAddressID: string;
   length?: string; width?: string; height?: string; distanceUnit?: string;
   weight?: string; massUnit?: string;
   providerServiceCode?: string; // optional direct provider
   test?: boolean; // per-shipment test flag
+  order?: {
+    sourceCode?: string; // defaulted to "API" by SDK when order is present
+    sourceIdentifier?: string;
+    orderNumber: string;
+    totalAmount?: string | number;
+    totalAmountCurrency?: string;
+  };
 }
 
 export type CreateShipmentRequest = CreateShipmentRequestBase & RecipientSpecifier;

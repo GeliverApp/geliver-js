@@ -15,12 +15,13 @@ async function main() {
   const senderId = sender.id as string;
   if (!senderId) throw new Error('sender.id is undefined');
   const shipment = await client.shipments.createTest({
-    sourceCode: 'API', senderAddressID: senderId,
+    senderAddressID: senderId,
     recipientAddress: {
       name: 'John Doe', email: 'john@example.com', phone: '+905051234568',
       address1: 'Dest St 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
       districtName: 'Esenyurt', districtID: 107605, zip: '34020'
     },
+    order: { orderNumber: 'ABC12333322', sourceIdentifier: 'https://magazaadresiniz.com', totalAmount: '150', totalAmountCurrency: 'TL' },
   // Request dimensions/weight must be strings
   length: '10.0', width: '10.0', height: '10.0', distanceUnit: 'cm', weight: '1.0', massUnit: 'kg',
   } as Omit<CreateShipmentRequest, 'test'>);
@@ -47,19 +48,7 @@ async function main() {
   console.log('Label URL:', tx.shipment?.labelURL);
   console.log('Tracking URL:', tx.shipment?.trackingUrl);
 
-  // Test gönderilerinde her GET /shipments çağrısı kargo durumunu bir adım ilerletir; prod'da webhook veya kendi sisteminiz önerilir.
-  for (let i = 0; i < 5; i++) {
-    await new Promise(r => setTimeout(r, 1000));
-    await client.shipments.get(shipment.id as string);
-  }
-  const finalStatus = await client.shipments.get(shipment.id as string) as any;
-  console.log('Final tracking status:', finalStatus?.trackingStatus?.trackingStatusCode, finalStatus?.trackingStatus?.trackingSubStatusCode);
-  
-  // Manual tracking check (on-demand status read)
-  const latest = await client.shipments.get(shipment.id as string) as any;
-  console.log('Status:', latest?.trackingStatus?.trackingStatusCode, latest?.trackingStatus?.trackingSubStatusCode);
-
-  // Download labels
+    // Download labels
   if (tx.shipment?.labelURL) {
     const pdf = await client.shipments.downloadLabelByUrl(tx.shipment.labelURL);
     await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdf));
@@ -68,6 +57,21 @@ async function main() {
     const html = await client.shipments.downloadResponsiveLabelByUrl(tx.shipment.responsiveLabelURL);
     await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
   }
+
+  // Test gönderilerinde her GET /shipments çağrısı kargo durumunu bir adım ilerletir; prod'da webhook veya kendi sisteminiz önerilir.
+  /*for (let i = 0; i < 5; i++) {
+    await new Promise(r => setTimeout(r, 1000));
+    await client.shipments.get(shipment.id as string);
+  }*/
+
+  const finalStatus = await client.shipments.get(shipment.id as string) as any;
+  console.log('Final tracking status:', finalStatus?.trackingStatus?.trackingStatusCode, finalStatus?.trackingStatus?.trackingSubStatusCode);
+  
+  // Manual tracking check (on-demand status read)
+  const latest = await client.shipments.get(shipment.id as string) as any;
+  console.log('Status:', latest?.trackingStatus?.trackingStatusCode, latest?.trackingStatus?.trackingSubStatusCode);
+
+
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
