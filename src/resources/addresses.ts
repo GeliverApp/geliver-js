@@ -15,11 +15,15 @@ export class AddressesResource {
 
   /** Create a sender address (isRecipientAddress=false). */
   createSender(body: Omit<CreateAddressRequest, 'isRecipientAddress'>): Promise<Address> {
+    if (!body.phone) throw new Error('phone is required for sender addresses');
+    if (!body.zip) throw new Error('zip is required for sender addresses');
     return this.create({ ...body, isRecipientAddress: false });
   }
 
   /** Create a recipient address (isRecipientAddress=true). */
   createRecipient(body: Omit<CreateAddressRequest, 'isRecipientAddress'>): Promise<Address> {
+    if (!body.phone) throw new Error('phone is required for recipient addresses');
+    // zip optional for recipients
     return this.create({ ...body, isRecipientAddress: true });
   }
 

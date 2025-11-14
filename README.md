@@ -280,7 +280,10 @@ const list = await client.webhooks.list();
 
 ## Örnekler
 
-- Çalıştırılabilir örnek akış için: `sdks/js/examples/full-flow.ts`.
+- Full flow: `sdks/js/examples/full-flow.mjs`
+- Tek aşamada gönderi (Create Transaction): `sdks/js/examples/onestep.mjs`
+- Kapıda ödeme: `sdks/js/examples/pod.mjs`
+- Kendi anlaşmanızla etiket satın alma: `sdks/js/examples/ownagreement.mjs`
 - Üretilmiş tipler `@geliver/sdk` altında (kaynak: `src/models`).
 
 ### Manuel takip kontrolü (isteğe bağlı)
@@ -320,6 +323,8 @@ await client.shipments.create({
 - İade (return) için `createReturn` kullanabilirsiniz.
 - Test gönderileri için `client.shipments.create({ ..., test: true })` veya `createTest(...)` yardımcı fonksiyonunu kullanın; canlı ortamda `createTest` yerine `client.shipments.create(...)` çağırın.
 - Takip numarası ile takip URL'si bazı kargo firmalarında teklif kabulünün hemen ardından oluşmayabilir. Paketi kargo şubesine teslim ettiğinizde veya kargo sizden teslim aldığında bu alanlar tamamlanır. Webhooklar ile değerleri otomatik çekebilir ya da teslimden sonra `shipment` GET isteği yaparak güncel bilgileri alabilirsiniz.
+
+- Adres kuralları: phone alanı gönderici ve alıcı adresleri için zorunludur. Zip alanı gönderici adresi için zorunludur; alıcı adresi için opsiyoneldir. `addresses.createSender(...)` phone/zip eksikse, `addresses.createRecipient(...)` phone eksikse hata verir.
 
 - Şehir/İlçe seçimi: cityCode ve cityName bir arada veya ayrı kullanılabilir; eşleşme açısından cityCode daha güvenlidir. Şehir/ilçe bilgilerini API ile alabilirsiniz:
 

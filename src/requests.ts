@@ -12,7 +12,7 @@ export interface CreateAddressRequest {
   cityCode: string;
   districtName: string;
   districtID?: number | string;
-  zip: string;
+  zip?: string; // required for sender; optional for recipient
   shortName?: string;
   isRecipientAddress?: boolean;
 }
@@ -26,6 +26,8 @@ export interface CreateShipmentRequestBase {
   length?: string; width?: string; height?: string; distanceUnit?: string;
   weight?: string; massUnit?: string;
   providerServiceCode?: string; // optional direct provider
+  providerAccountID?: string; // own agreement (provider account)
+  productPaymentOnDelivery?: boolean; // kapıda ödeme
   test?: boolean; // per-shipment test flag
   order?: {
     sourceCode?: string; // defaulted to "API" by SDK when order is present

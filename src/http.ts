@@ -96,11 +96,14 @@ export class HttpClient {
         if (envelope && (envelope.data !== undefined || envelope.result !== undefined)) {
           if (envelope.result === false) {
             throw new GeliverError(envelope.message || 'API error', {
-              code: envelope.code,
+              code: (envelope as any)?.code,
               responseBody: json,
               additionalMessage: envelope.additionalMessage,
             });
           }
+          // If pagination-like fields exist, return full envelope to preserve metadata; otherwise return data
+          const hasPaging = envelope && (envelope.limit !== undefined || envelope.page !== undefined || envelope.totalPages !== undefined || envelope.totalRows !== undefined);
+          if (hasPaging) return json as T;
           return (envelope.data as T) ?? (json as T);
         }
         return (json as T) ?? (undefined as unknown as T);
