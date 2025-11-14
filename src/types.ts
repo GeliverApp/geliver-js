@@ -1,6 +1,7 @@
 export interface ResponseEnvelope<T> {
   result?: boolean;
   message?: string;
+  code?: string;
   additionalMessage?: string;
   limit?: number;
   page?: number;
@@ -19,12 +20,14 @@ export class GeliverError extends Error {
   code?: string;
   status?: number;
   responseBody?: any;
-  constructor(message: string, opts?: { code?: string; status?: number; responseBody?: any }) {
+  additionalMessage?: string;
+  constructor(message: string, opts?: { code?: string; status?: number; responseBody?: any; additionalMessage?: string }) {
     super(message);
     this.name = 'GeliverError';
     this.code = opts?.code;
     this.status = opts?.status;
     this.responseBody = opts?.responseBody;
+    this.additionalMessage = opts?.additionalMessage;
   }
 }
 

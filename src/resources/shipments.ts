@@ -82,7 +82,7 @@ export class ShipmentsResource {
     while (true) {
       const s = await this.get(shipmentID) as any;
       const offers = s?.offers;
-      if (offers && (offers.percentageCompleted >= 99 || offers.cheapest)) return offers;
+      if (offers && (offers.percentageCompleted == 100 || offers.cheapest)) return offers;
       if (Date.now() - start > timeout) throw new Error('Timed out waiting for offers');
       await new Promise(r => setTimeout(r, interval));
     }

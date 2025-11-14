@@ -77,10 +77,11 @@ export class HttpClient {
         try { json = text ? JSON.parse(text) : undefined; } catch { json = undefined; }
 
         if (!res.ok) {
-          const err = new GeliverError(`HTTP ${res.status}`, {
+          const err = new GeliverError(`HTTP ${res.status}` , {
             status: res.status,
             code: (json as any)?.code,
             responseBody: json ?? text,
+            additionalMessage: (json as any)?.additionalMessage,
           });
           if (this.shouldRetry(res.status, attempt)) {
             attempt++;
@@ -93,6 +94,13 @@ export class HttpClient {
         // Unwrap response envelope if applicable
         const envelope = json as ResponseEnvelope<any> | undefined;
         if (envelope && (envelope.data !== undefined || envelope.result !== undefined)) {
+          if (envelope.result === false) {
+            throw new GeliverError(envelope.message || 'API error', {
+              code: envelope.code,
+              responseBody: json,
+              additionalMessage: envelope.additionalMessage,
+            });
+          }
           return (envelope.data as T) ?? (json as T);
         }
         return (json as T) ?? (undefined as unknown as T);

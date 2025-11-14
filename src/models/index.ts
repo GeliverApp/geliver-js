@@ -57,9 +57,7 @@ export interface District {
   regionCode?: string;
 }
 
-/** Duration model */
-export interface Duration {
-}
+// Duration was previously modeled as an object; the API returns an integer timestamp for duration.
 
 /** Item model */
 export interface Item {
@@ -99,7 +97,7 @@ export interface Offer {
   amountOld?: string;
   amountTax?: string;
   amountVat?: string;
-  averageEstimatedTime?: Duration;
+  averageEstimatedTime?: number;
   averageEstimatedTimeHumanReadible?: string;
   bonusBalance?: string;
   createdAt?: string;
@@ -115,8 +113,8 @@ export interface Offer {
   isGlobal?: boolean;
   isMainOffer?: boolean;
   isProviderAccountOffer?: boolean;
-  maxEstimatedTime?: Duration;
-  minEstimatedTime?: Duration;
+  maxEstimatedTime?: number;
+  minEstimatedTime?: number;
   owner?: string;
   predictedDeliveryTime?: string | number;
   providerAccountID?: string;

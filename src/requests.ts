@@ -11,7 +11,7 @@ export interface CreateAddressRequest {
   cityName: string;
   cityCode: string;
   districtName: string;
-  districtID: number | string;
+  districtID?: number | string;
   zip: string;
   shortName?: string;
   isRecipientAddress?: boolean;

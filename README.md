@@ -1,5 +1,7 @@
 # Geliver JS SDK
 
+[![npm version](https://img.shields.io/npm/v/@geliver/sdk.svg)](https://www.npmjs.com/package/@geliver/sdk) [![Node.js Version](https://img.shields.io/node/v/@geliver/sdk.svg)](https://www.npmjs.com/package/@geliver/sdk)
+
 Geliver JS SDK — official TypeScript/Node.js client for Geliver Kargo Pazaryeri (Shipping Marketplace) API.
 Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu sağlar.
 
@@ -59,7 +61,6 @@ const sender = await client.addresses.createSender({
   cityName: "Istanbul",
   cityCode: "34",
   districtName: "Esenyurt",
-  districtID: 107605,
   zip: "34020",
 });
 
@@ -73,7 +74,6 @@ const created = await client.shipments.createTest({
     cityName: "Istanbul",
     cityCode: "34",
     districtName: "Kadikoy",
-    districtID: 100000,
     zip: "34000",
   },
   // Request dimensions/weight must be strings
@@ -108,7 +108,6 @@ const sender = await client.addresses.createSender({
   cityName: "Istanbul",
   cityCode: "34",
   districtName: "Esenyurt",
-  districtID: 107605,
   zip: "34020",
   shortName: "Warehouse-1",
 });
@@ -128,7 +127,6 @@ const created = await client.shipments.create({
     cityName: "Istanbul",
     cityCode: "34",
     districtName: "Kadikoy",
-    districtID: 100000,
     zip: "34000",
   },
   length: "10.0",
@@ -179,7 +177,6 @@ const recipient = await client.addresses.createRecipient({
   cityName: "Istanbul",
   cityCode: "34",
   districtName: "Kadikoy",
-  districtID: 100000,
   zip: "34000",
 });
 
@@ -315,7 +312,7 @@ await client.shipments.create({
 - İade (return) için `createReturn` kullanabilirsiniz.
 - Test gönderileri için `client.shipments.create({ ..., test: true })` veya `createTest(...)` yardımcı fonksiyonunu kullanın; canlı ortamda `createTest` yerine `client.shipments.create(...)` çağırın.
 - Takip numarası ile takip URL'si bazı kargo firmalarında teklif kabulünün hemen ardından oluşmayabilir. Paketi kargo şubesine teslim ettiğinizde veya kargo sizden teslim aldığında bu alanlar tamamlanır. Webhooklar ile değerleri otomatik çekebilir ya da teslimden sonra `shipment` GET isteği yaparak güncel bilgileri alabilirsiniz.
-- İlçe seçimi: districtID (number) kullanmanız önerilir. districtName her zaman kesin eşleşmeyebilir.
+
 - Şehir/İlçe seçimi: cityCode ve cityName bir arada veya ayrı kullanılabilir; eşleşme açısından cityCode daha güvenlidir. Şehir/ilçe bilgilerini API ile alabilirsiniz:
 
 ```ts

@@ -9,7 +9,7 @@ const client = new GeliverClient({ token });
 const sender = await client.addresses.createSender({
   name: 'ACME Inc.', email: 'ops@acme.test', phone: '+905051234567',
   address1: 'Street 1', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
-  districtName: 'Esenyurt', districtID: 107605, zip: '34020', isRecipientAddress: false,
+  districtName: 'Esenyurt', zip: '34020', isRecipientAddress: false,
 });
 // Inline recipientAddress (adres kaydı oluşturmadan) 
 const shipment = await client.shipments.createTest({
@@ -17,7 +17,7 @@ const shipment = await client.shipments.createTest({
   recipientAddress: {
     name: 'John Doe', email: 'john@example.com', phone: '+905051234568',
     address1: 'Dest St 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
-    districtName: 'Esenyurt', districtID: 107605, zip: '34020'
+    districtName: 'Esenyurt', zip: '34020'
   },
   order: { orderNumber: 'ABC12333322', sourceIdentifier: 'https://magazaadresiniz.com', totalAmount: '150', totalAmountCurrency: 'TL' },
   // Request dimensions/weight must be strings
@@ -39,15 +39,47 @@ if (!(offers && (offers.percentageCompleted == 100 || offers.cheapest))) {
   }
 }
 const cheapest = offers.cheapest;
-const tx = await client.transactions.acceptOffer(cheapest.id);
-console.log('tx', tx.id, tx.isPayed);
-if (tx.shipment?.labelURL) {
-  const pdf = await client.shipments.downloadLabel(shipment.id);
-  await writeFile('sdks/output/label-node.pdf', pdf);
+if (!cheapest) {
+  console.error('No cheapest offer available');
+  process.exit(1);
 }
-if (tx.shipment?.responsiveLabelURL) {
-  const html = await client.shipments.downloadResponsiveLabel(shipment.id);
-  await writeFile('sdks/output/label-node.html', html);
+
+let tx;
+try {
+  tx = await client.transactions.acceptOffer(cheapest.id);
+} catch (err) {
+  console.error('Accept offer error:', err.message || err);
+  if (err.response) {
+    console.error('API Error:', err.response.status, err.response.data);
+  }
+  process.exit(1);
+}
+console.log('tx', tx.id, tx.isPayed);
+
+// Etiket indirme: LabelFileType kontrolü
+// Eğer LabelFileType "PROVIDER_PDF" ise, LabelURL'den indirilen PDF etiket kullanılmalıdır.
+// Eğer LabelFileType "PDF" ise, responsiveLabelURL (HTML) dosyası kullanılabilir.
+if (tx.shipment) {
+  if (tx.shipment.labelFileType === 'PROVIDER_PDF') {
+    // PROVIDER_PDF: Sadece PDF etiket kullanılmalı
+    if (tx.shipment.labelURL) {
+      const pdf = await client.shipments.downloadLabel(shipment.id);
+      await writeFile('sdks/output/label-node.pdf', pdf);
+      console.log('PDF etiket indirildi (PROVIDER_PDF)');
+    }
+  } else if (tx.shipment.labelFileType === 'PDF') {
+    // PDF: ResponsiveLabel (HTML) kullanılabilir
+    if (tx.shipment.responsiveLabelURL) {
+      const html = await client.shipments.downloadResponsiveLabel(shipment.id);
+      await writeFile('sdks/output/label-node.html', html);
+      console.log('HTML etiket indirildi (PDF)');
+    }
+    // İsteğe bağlı olarak PDF de indirilebilir
+    if (tx.shipment.labelURL) {
+      const pdf = await client.shipments.downloadLabel(shipment.id);
+      await writeFile('sdks/output/label-node.pdf', pdf);
+    }
+  }
 }
 
 // Test gönderilerinde her GET /shipments isteği kargo durumunu bir adım ilerletir.

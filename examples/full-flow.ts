@@ -8,7 +8,7 @@ async function main() {
   const sender = await client.addresses.createSender({
     name: 'ACME Inc.', email: 'ops@acme.test', phone: '+905051234567',
     address1: 'Street 1', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
-    districtName: 'Esenyurt', districtID: 107605, zip: '34020'
+    districtName: 'Esenyurt', zip: '34020'
   });
 
   // Inline recipientAddress without saving
@@ -19,7 +19,7 @@ async function main() {
     recipientAddress: {
       name: 'John Doe', email: 'john@example.com', phone: '+905051234568',
       address1: 'Dest St 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
-      districtName: 'Esenyurt', districtID: 107605, zip: '34020'
+      districtName: 'Esenyurt', zip: '34020'
     },
     order: { orderNumber: 'ABC12333322', sourceIdentifier: 'https://magazaadresiniz.com', totalAmount: '150', totalAmountCurrency: 'TL' },
   // Request dimensions/weight must be strings
@@ -41,21 +41,50 @@ async function main() {
     }
   }
   const cheapest = offers.cheapest;
-  const tx = await client.transactions.acceptOffer(cheapest.id);
+  if (!cheapest) {
+    throw new Error('No cheapest offer available');
+  }
+
+  let tx;
+  try {
+    tx = await client.transactions.acceptOffer(cheapest.id);
+  } catch (err: any) {
+    console.error('Accept offer error:', err.message || err);
+    if (err.response) {
+      console.error('API Error:', err.response.status, err.response.data);
+    }
+    throw err;
+  }
   console.log('Transaction', tx.id, tx.isPayed);
   console.log('Barcode:', tx.shipment?.barcode);
   console.log('Tracking number:', tx.shipment?.trackingNumber);
   console.log('Label URL:', tx.shipment?.labelURL);
   console.log('Tracking URL:', tx.shipment?.trackingUrl);
 
-    // Download labels
-  if (tx.shipment?.labelURL) {
-    const pdf = await client.shipments.downloadLabelByUrl(tx.shipment.labelURL);
-    await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdf));
-  }
-  if (tx.shipment?.responsiveLabelURL) {
-    const html = await client.shipments.downloadResponsiveLabelByUrl(tx.shipment.responsiveLabelURL);
-    await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
+  // Etiket indirme: LabelFileType kontrolü
+  // Eğer LabelFileType "PROVIDER_PDF" ise, LabelURL'den indirilen PDF etiket kullanılmalıdır.
+  // Eğer LabelFileType "PDF" ise, responsiveLabelURL (HTML) dosyası kullanılabilir.
+  if (tx.shipment) {
+    if (tx.shipment.labelFileType === 'PROVIDER_PDF') {
+      // PROVIDER_PDF: Sadece PDF etiket kullanılmalı
+      if (tx.shipment.labelURL) {
+        const pdf = await client.shipments.downloadLabelByUrl(tx.shipment.labelURL);
+        await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdf));
+        console.log('PDF etiket indirildi (PROVIDER_PDF)');
+      }
+    } else if (tx.shipment.labelFileType === 'PDF') {
+      // PDF: ResponsiveLabel (HTML) kullanılabilir
+      if (tx.shipment.responsiveLabelURL) {
+        const html = await client.shipments.downloadResponsiveLabelByUrl(tx.shipment.responsiveLabelURL);
+        await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
+        console.log('HTML etiket indirildi (PDF)');
+      }
+      // İsteğe bağlı olarak PDF de indirilebilir
+      if (tx.shipment.labelURL) {
+        const pdf = await client.shipments.downloadLabelByUrl(tx.shipment.labelURL);
+        await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdf));
+      }
+    }
   }
 
   // Test gönderilerinde her GET /shipments çağrısı kargo durumunu bir adım ilerletir; prod'da webhook veya kendi sisteminiz önerilir.
