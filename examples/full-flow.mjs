@@ -8,7 +8,7 @@ const client = new GeliverClient({ token });
 
 const sender = await client.addresses.createSender({
   name: 'ACME Inc.', email: 'ops@acme.test', phone: '+905051234567',
-  address1: 'Street 1', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
+  address1: 'Hasan mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
   districtName: 'Esenyurt', zip: '34020', isRecipientAddress: false,
 });
 // Inline recipientAddress (adres kaydı oluşturmadan) 
@@ -16,7 +16,7 @@ const shipment = await client.shipments.createTest({
   senderAddressID: sender.id,
   recipientAddress: {
     name: 'John Doe', email: 'john@example.com', phone: '+905051234568',
-    address1: 'Dest St 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
+    address1: 'Hasan mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
     districtName: 'Esenyurt', zip: '34020'
   },
   order: { orderNumber: 'ABC12333322', sourceIdentifier: 'https://magazaadresiniz.com', totalAmount: '150', totalAmountCurrency: 'TL' },

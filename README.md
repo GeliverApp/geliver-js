@@ -51,29 +51,33 @@ Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu 
 ```ts
 import { GeliverClient } from "@geliver/sdk";
 
-const client = new GeliverClient({ token: process.env.GELIVER_TOKEN! });
+const client = new GeliverClient({ token: process.env.GELIVER_TOKEN });
 
 const sender = await client.addresses.createSender({
   name: "ACME Inc.",
   email: "ops@acme.test",
-  address1: "Street 1",
+  address1: "Hasan mahallesi",
   countryCode: "TR",
-  cityName: "Istanbul",
+  cityName: "İstanbul",
   cityCode: "34",
   districtName: "Esenyurt",
+  phone: "+905551112233",
   zip: "34020",
 });
+
+console.log("Sender created:", sender);
 
 const created = await client.shipments.createTest({
   senderAddressID: sender.id,
   recipientAddress: {
     name: "John Doe",
     email: "john@example.com",
-    address1: "Dest St 2",
+    address1: "Hasan mahallesi",
     countryCode: "TR",
-    cityName: "Istanbul",
+    cityName: "İstanbul",
     cityCode: "34",
-    districtName: "Kadikoy",
+    districtName: "Kadıköy",
+    phone: "+905551112233",
     zip: "34000",
   },
   // Request dimensions/weight must be strings
@@ -84,6 +88,8 @@ const created = await client.shipments.createTest({
   weight: "1.0",
   massUnit: "kg",
 });
+
+console.log("Shipment created:", created);
 ```
 
 Canlı ortamda `client.shipments.createTest(...)` yerine `client.shipments.create(...)` kullanın.
@@ -103,7 +109,7 @@ const sender = await client.addresses.createSender({
   name: "ACME Inc.",
   email: "ops@acme.test",
   phone: "+905051234567",
-  address1: "Street 1",
+  address1: "Hasan mahallesi",
   countryCode: "TR",
   cityName: "Istanbul",
   cityCode: "34",
@@ -122,11 +128,12 @@ const created = await client.shipments.create({
   recipientAddress: {
     name: "John Doe",
     email: "john@example.com",
-    address1: "Dest St 2",
+    address1: "Hasan mahallesi Dest St 2",
     countryCode: "TR",
-    cityName: "Istanbul",
+    cityName: "İstanbul",
     cityCode: "34",
-    districtName: "Kadikoy",
+    districtName: "Kadıköy",
+    phone: "+905551112233",
     zip: "34000",
   },
   length: "10.0",
@@ -172,18 +179,19 @@ console.log("Tracking URL:", tx.shipment?.trackingUrl);
 const recipient = await client.addresses.createRecipient({
   name: "John Doe",
   email: "john@example.com",
-  address1: "Dest St 2",
+  address1: "Hasan mahallesi Dest St 2",
   countryCode: "TR",
-  cityName: "Istanbul",
+  cityName: "İstanbul",
   cityCode: "34",
-  districtName: "Kadikoy",
+  districtName: "Kadıköy",
+  phone: "+905551112233",
   zip: "34000",
 });
 
 const createdDirect = await client.shipments.create({
   senderAddressID: sender.id,
   recipientAddressID: recipient.id,
-  providerServiceCode: "MNG_STANDART",
+  providerServiceCode: "SURAT_STANDART",
   length: "10.0",
   width: "10.0",
   height: "10.0",
