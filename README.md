@@ -326,6 +326,26 @@ await client.shipments.create({
 
 - Adres kuralları: phone alanı gönderici ve alıcı adresleri için zorunludur. Zip alanı gönderici adresi için zorunludur; alıcı adresi için opsiyoneldir. `addresses.createSender(...)` phone/zip eksikse, `addresses.createRecipient(...)` phone eksikse hata verir.
 
+## Hatalar ve İstisnalar
+
+- İstemci şu durumlarda hata fırlatır: (1) HTTP 4xx/5xx; (2) JSON envelope `result === false`.
+- Hata sınıfı `GeliverError` ve alanları: `code?: string`, `status?: number`, `additionalMessage?: string`, `responseBody?: any`, `message`.
+
+```ts
+try {
+  await client.shipments.create({ /* ... */ });
+} catch (e: any) {
+  if (e?.name === 'GeliverError') {
+    console.error('code:', e.code);
+    console.error('message:', e.message);
+    console.error('additionalMessage:', e.additionalMessage);
+    console.error('status:', e.status);
+  } else {
+    console.error('unexpected error', e);
+  }
+}
+```
+
 - Şehir/İlçe seçimi: cityCode ve cityName bir arada veya ayrı kullanılabilir; eşleşme açısından cityCode daha güvenlidir. Şehir/ilçe bilgilerini API ile alabilirsiniz:
 
 ```ts
