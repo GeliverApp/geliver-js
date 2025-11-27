@@ -28,7 +28,7 @@ async function main() {
 
   // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 
-  const offers: any = (shipment as any).offers ?? (await client.shipments.get(shipment.id as string)).offers;
+  const offers: any = (shipment as any).offers;
   const cheapest = offers?.cheapest;
   if (!cheapest) {
     throw new Error('No cheapest offer available');

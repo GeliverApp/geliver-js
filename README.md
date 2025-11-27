@@ -146,9 +146,12 @@ const created = await client.shipments.create({
 
 // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 
-// Teklifler create yanıtında hazır olabilir; yoksa tek bir GET ile güncel shipment alın
-const offers: any = (created as any).offers ?? (await client.shipments.get(created.id)).offers;
+// Teklifler create yanıtında hazır olabilir; create yanıtındaki offers alanını kullanın
+const offers: any = (created as any).offers;
 const cheapest = offers?.cheapest;
+if (!cheapest) {
+  throw new Error("Cheapest offer missing (henüz hazır değil). Tekrar GET /shipments yapmayı deneyin.");
+}
 const tx = await client.transactions.acceptOffer(cheapest.id);
 console.log("Purchased label:", tx.id, tx.isPayed);
 console.log("Barcode:", tx.shipment?.barcode);

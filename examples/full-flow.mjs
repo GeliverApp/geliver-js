@@ -26,7 +26,7 @@ const shipment = await client.shipments.createTest({
 // Etiketler bazı akışlarda create sonrasında hazır olabilir; varsa hemen indirin
 await mkdir('sdks/output', { recursive: true });
 // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
-const offers = shipment.offers ?? (await client.shipments.get(shipment.id)).offers;
+const offers = shipment.offers;
 const cheapest = offers?.cheapest;
 if (!cheapest) {
   console.error('No cheapest offer available');
