@@ -28,19 +28,8 @@ async function main() {
 
   // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 
-  // Teklifler create yanıtında hazır olabilir; önce onu kontrol edin
-  let offers: any = (shipment as any).offers;
-  if (!(offers && (offers.percentageCompleted == 100 || offers.cheapest))) {
-    const start = Date.now();
-    while (true) {
-      const s = await client.shipments.get(shipment.id as string) as any;
-      offers = s.offers;
-      if (offers && (offers.percentageCompleted == 100 || offers.cheapest)) break;
-      if (Date.now() - start > 60000) throw new Error('Timed out waiting for offers');
-      await new Promise(r => setTimeout(r, 1000));
-    }
-  }
-  const cheapest = offers.cheapest;
+  const offers: any = (shipment as any).offers ?? (await client.shipments.get(shipment.id as string)).offers;
+  const cheapest = offers?.cheapest;
   if (!cheapest) {
     throw new Error('No cheapest offer available');
   }

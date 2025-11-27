@@ -146,20 +146,8 @@ const created = await client.shipments.create({
 
 // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 
-// Teklifler create yanıtında hazır olabilir; önce onu kontrol edin
-let offers: any = (created as any).offers;
-if (!(offers && (offers.percentageCompleted == 100 || offers.cheapest))) {
-  // Hazır değilse, %100 olana kadar 1 sn aralıkla sorgulayın
-  let done = false;
-  while (!done) {
-    const s = await client.shipments.get(created.id);
-    offers = (s as any).offers;
-    if (offers && (offers.percentageCompleted == 100 || offers.cheapest))
-      done = true;
-    else await new Promise((r) => setTimeout(r, 1000));
-  }
-}
-
+// Teklifler create yanıtında hazır olabilir; yoksa tek bir GET ile güncel shipment alın
+const offers: any = (created as any).offers ?? (await client.shipments.get(created.id)).offers;
 const cheapest = offers?.cheapest;
 const tx = await client.transactions.acceptOffer(cheapest.id);
 console.log("Purchased label:", tx.id, tx.isPayed);
