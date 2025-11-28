@@ -251,7 +251,10 @@ Not:
 
 ```ts
 import http from "node:http";
-import { verifyWebhookSignature } from "@geliver/sdk";
+import {
+  verifyWebhookSignature,
+  WebhookUpdateTrackingRequest,
+} from "@geliver/sdk";
 
 http
   .createServer(async (req, res) => {
@@ -266,8 +269,14 @@ http
         res.statusCode = 400;
         return res.end("invalid");
       }
-      const evt = JSON.parse(body);
-      // process evt
+      const evt = JSON.parse(body) as WebhookUpdateTrackingRequest;
+      if (evt.event === "TRACK_UPDATED") {
+        console.log(
+          "Tracking update:",
+          evt.data.trackingUrl,
+          evt.data.trackingNumber
+        );
+      }
       res.end("ok");
     } else {
       res.statusCode = 404;

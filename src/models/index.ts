@@ -388,3 +388,11 @@ export interface Tracking {
   trackingSubStatusCode?: string;
   updatedAt?: string;
 }
+
+/** WebhookUpdateTrackingRequest model */
+export interface WebhookUpdateTrackingRequest {
+  event: string;
+  metadata?: string;
+  /** Shipment payload under data */
+  data: Shipment;
+}
