@@ -397,6 +397,44 @@ await client.providers.deleteAccount(createdAcc.id, {
 });
 ```
 
+### Gönderi Listeleme, Getir, Güncelle, İptal, Klonla
+
+- Listeleme (docs): https://docs.geliver.io/docs/shipments_and_transaction/list_shipments
+- Gönderi getir (docs): https://docs.geliver.io/docs/shipments_and_transaction/list_shipments
+- Paket güncelle (docs): https://docs.geliver.io/docs/shipments_and_transaction/update_package_shipment
+- Gönderi iptal (docs): https://docs.geliver.io/docs/shipments_and_transaction/cancel_shipment
+- Gönderi klonla (docs): https://docs.geliver.io/docs/shipments_and_transaction/clone_shipment
+
+```ts
+// Listeleme (sayfalandırma)
+const list = await client.shipments.list({ page: 1, limit: 20 });
+for (const shipment of list.data ?? []) {
+  console.log(shipment.id, (shipment as any).statusCode);
+}
+
+// Getir
+const fetched = await client.shipments.get("SHIPMENT_ID");
+const ts = (fetched as any).trackingStatus;
+console.log("Tracking:", ts?.trackingStatusCode, ts?.trackingSubStatusCode);
+
+// Paket güncelle (eni, boyu, yüksekliği ve ağırlığı string gönderin)
+await client.shipments.updatePackage(fetched.id!, {
+  length: "12.0",
+  width: "12.0",
+  height: "10.0",
+  distanceUnit: "cm",
+  weight: "1.2",
+  massUnit: "kg",
+});
+
+// İptal
+await client.shipments.cancel(fetched.id!);
+
+// Klonla
+const cloned = await client.shipments.clone(fetched.id!);
+console.log("Cloned shipment:", cloned.id);
+```
+
 ## Kargo Şablonları
 
 ```ts
