@@ -21,7 +21,7 @@ async function main() {
       address1: 'Hasan mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34',
       districtName: 'Esenyurt', zip: '34020'
     },
-    order: { orderNumber: 'ABC12333322', sourceIdentifier: 'https://magazaadresiniz.com', totalAmount: '150', totalAmountCurrency: 'TL' },
+    order: { orderNumber: 'ABC12333322', sourceIdentifier: 'https://magazaadresiniz.com', totalAmount: '150', totalAmountCurrency: 'TRY' },
   // Request dimensions/weight must be strings
   length: '10.0', width: '10.0', height: '10.0', distanceUnit: 'cm', weight: '1.0', massUnit: 'kg',
   } as Omit<CreateShipmentRequest, 'test'>);
