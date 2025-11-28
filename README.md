@@ -374,7 +374,7 @@ const cities = await client.geo.listCities("TR");
 const districts = await client.geo.listDistricts("TR", "34");
 ```
 
-## Sağlayıcı Hesapları
+## Kendi kargo anlaşmanız
 
 ```ts
 // Create provider account
@@ -397,7 +397,7 @@ await client.providers.deleteAccount(createdAcc.id, {
 });
 ```
 
-## Kargo Şablonları (Kendi kargo anlaşmanız)
+## Kargo Şablonları
 
 ```ts
 // Create template
