@@ -24,8 +24,7 @@ Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu 
 
 ## Kurulum
 
-- Projenize ekleyip yerelde derleyin (açık kaynak yayın planlanıyor):
-  - `npm i && npm run build`
+- `npm i @geliver/sdk`
 
 ## Akış (TR)
 
