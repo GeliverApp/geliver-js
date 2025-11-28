@@ -24,7 +24,7 @@ const shipment = await client.shipments.createTest({
   length: '10.0', width: '10.0', height: '10.0', distanceUnit: 'cm', weight: '1.0', massUnit: 'kg',
 });
 // Etiketler bazı akışlarda create sonrasında hazır olabilir; varsa hemen indirin
-await mkdir('sdks/output', { recursive: true });
+await mkdir('output', { recursive: true });
 // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
 const offers = shipment.offers;
 const cheapest = offers?.cheapest;
@@ -53,20 +53,20 @@ if (tx.shipment) {
     // PROVIDER_PDF: Sadece PDF etiket kullanılmalı
     if (tx.shipment.labelURL) {
       const pdf = await client.shipments.downloadLabel(shipment.id);
-      await writeFile('sdks/output/label-node.pdf', pdf);
+      await writeFile('output/label-node.pdf', pdf);
       console.log('PDF etiket indirildi (PROVIDER_PDF)');
     }
   } else if (tx.shipment.labelFileType === 'PDF') {
     // PDF: ResponsiveLabel (HTML) kullanılabilir
     if (tx.shipment.responsiveLabelURL) {
       const html = await client.shipments.downloadResponsiveLabel(shipment.id);
-      await writeFile('sdks/output/label-node.html', html);
+      await writeFile('output/label-node.html', html);
       console.log('HTML etiket indirildi (PDF)');
     }
     // İsteğe bağlı olarak PDF de indirilebilir
     if (tx.shipment.labelURL) {
       const pdf = await client.shipments.downloadLabel(shipment.id);
-      await writeFile('sdks/output/label-node.pdf', pdf);
+      await writeFile('output/label-node.pdf', pdf);
     }
   }
 }

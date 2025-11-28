@@ -6,13 +6,13 @@ const client = new GeliverClient({ token });
 
 const sender = await client.addresses.createSender({
   name: 'POD Sender', email: 'sender@example.com',
-  address1: 'Street 1', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34', districtName: 'Esenyurt', zip: '34020',
+  address1: 'Hasan Mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34', districtName: 'Esenyurt', zip: '34020',
 });
 
 const tx = await client.transactions.create({
   senderAddressID: sender.id,
   recipientAddress: {
-    name: 'POD Recipient', phone: '+905000000001', address1: 'Dest 2', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34', districtName: 'Esenyurt',
+    name: 'POD Recipient', phone: '+905000000001', address1: 'Atatürk Mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34', districtName: 'Esenyurt',
   },
   length: '10.0', width: '10.0', height: '10.0', distanceUnit: 'cm', weight: '1.0', massUnit: 'kg',
   providerServiceCode: 'PTT_KAPIDA_ODEME',

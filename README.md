@@ -25,7 +25,7 @@ Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu 
 ## Kurulum
 
 - Projenize ekleyip yerelde derleyin (açık kaynak yayın planlanıyor):
-  - `cd sdks/js && npm i && npm run build`
+  - `npm i && npm run build`
 
 ## Akış (TR)
 
@@ -87,6 +87,13 @@ const created = await client.shipments.createTest({
   distanceUnit: "cm",
   weight: "1.0",
   massUnit: "kg",
+  order: {
+    orderNumber: "WEB-12345",
+    // sourceIdentifier alanına mağazanızın tam adresini (ör. https://magazam.com) gönderin.
+    sourceIdentifier: "https://magazam.com",
+    totalAmount: "150",
+    totalAmountCurrency: "TRY",
+  },
 });
 
 console.log("Shipment created:", created);
@@ -128,7 +135,7 @@ const created = await client.shipments.create({
   recipientAddress: {
     name: "John Doe",
     email: "john@example.com",
-    address1: "Hasan mahallesi Dest St 2",
+    address1: "Atatürk Mahallesi",
     countryCode: "TR",
     cityName: "İstanbul",
     cityCode: "34",
@@ -142,6 +149,13 @@ const created = await client.shipments.create({
   distanceUnit: "cm",
   weight: "1.0",
   massUnit: "kg",
+  order: {
+    orderNumber: "WEB-12345",
+    // sourceIdentifier alanına mağazanızın tam adresini (ör. https://magazam.com) gönderin.
+    sourceIdentifier: "https://magazam.com",
+    totalAmount: "150",
+    totalAmountCurrency: "TRY",
+  },
 });
 
 // Etiket indirme: Teklif kabulünden sonra (Transaction) gelen URL'leri kullanabilirsiniz de; URL'lere her shipment nesnesinin içinden ulaşılır.
@@ -150,7 +164,9 @@ const created = await client.shipments.create({
 const offers: any = (created as any).offers;
 const cheapest = offers?.cheapest;
 if (!cheapest) {
-  throw new Error("Cheapest offer missing (henüz hazır değil). Tekrar GET /shipments yapmayı deneyin.");
+  throw new Error(
+    "Cheapest offer missing (henüz hazır değil). Tekrar GET /shipments yapmayı deneyin."
+  );
 }
 const tx = await client.transactions.acceptOffer(cheapest.id);
 console.log("Purchased label:", tx.id, tx.isPayed);
@@ -170,7 +186,7 @@ console.log("Tracking URL:", tx.shipment?.trackingUrl);
 const recipient = await client.addresses.createRecipient({
   name: "John Doe",
   email: "john@example.com",
-  address1: "Hasan mahallesi Dest St 2",
+  address1: "Atatürk Mahallesi",
   countryCode: "TR",
   cityName: "İstanbul",
   cityCode: "34",
@@ -271,10 +287,10 @@ const list = await client.webhooks.list();
 
 ## Örnekler
 
-- Full flow: `sdks/js/examples/full-flow.mjs`
-- Tek aşamada gönderi (Create Transaction): `sdks/js/examples/onestep.mjs`
-- Kapıda ödeme: `sdks/js/examples/pod.mjs`
-- Kendi anlaşmanızla etiket satın alma: `sdks/js/examples/ownagreement.mjs`
+- Full flow: `examples/full-flow.mjs`
+- Tek aşamada gönderi (Create Transaction): `examples/onestep.mjs`
+- Kapıda ödeme: `examples/pod.mjs`
+- Kendi anlaşmanızla etiket satın alma: `examples/ownagreement.mjs`
 - Üretilmiş tipler `@geliver/sdk` altında (kaynak: `src/models`).
 
 ### Manuel takip kontrolü (isteğe bağlı)
@@ -324,15 +340,17 @@ await client.shipments.create({
 
 ```ts
 try {
-  await client.shipments.create({ /* ... */ });
+  await client.shipments.create({
+    /* ... */
+  });
 } catch (e: any) {
-  if (e?.name === 'GeliverError') {
-    console.error('code:', e.code);
-    console.error('message:', e.message);
-    console.error('additionalMessage:', e.additionalMessage);
-    console.error('status:', e.status);
+  if (e?.name === "GeliverError") {
+    console.error("code:", e.code);
+    console.error("message:", e.message);
+    console.error("additionalMessage:", e.additionalMessage);
+    console.error("status:", e.status);
   } else {
-    console.error('unexpected error', e);
+    console.error("unexpected error", e);
   }
 }
 ```
