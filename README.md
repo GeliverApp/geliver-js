@@ -211,26 +211,19 @@ const createdDirect = await client.shipments.create({
 
 ## Test gönderilerinde durum ilerletme ve etiket indirme
 
-````ts
+```ts
 // Test gönderilerinde her GET /shipments isteği kargo durumunu bir adım ilerletir; prod'da webhook veya kendi sisteminizin kontrollerini tercih edin.
 for (let i = 0; i < 5; i++) {
-  await new Promise(r => setTimeout(r, 1000));
+  await new Promise((r) => setTimeout(r, 1000));
   await client.shipments.get(created.id);
 }
 const latest = await client.shipments.get(created.id);
-console.log('Final tracking status:', (latest as any).trackingStatus?.trackingStatusCode, (latest as any).trackingStatus?.trackingSubStatusCode);
-
-// 4) Download labels (teklif kabulünden sonra Transaction.Shipment URL'leriyle)
-```ts
-if (tx.shipment?.labelURL) {
-  const pdfBytes = await client.shipments.downloadLabelByUrl(tx.shipment.labelURL);
-  await import('node:fs/promises').then(fs => fs.writeFile('label.pdf', pdfBytes));
-}
-if (tx.shipment?.responsiveLabelURL) {
-  const html = await client.shipments.downloadResponsiveLabelByUrl(tx.shipment.responsiveLabelURL);
-  await import('node:fs/promises').then(fs => fs.writeFile('label.html', html));
-}
-````
+console.log(
+  "Final tracking status:",
+  (latest as any).trackingStatus?.trackingStatusCode,
+  (latest as any).trackingStatus?.trackingSubStatusCode
+);
+```
 
 ## İade Gönderisi Oluşturun
 
