@@ -5,7 +5,7 @@ if (!token) { console.error('GELIVER_TOKEN required'); process.exit(1); }
 const client = new GeliverClient({ token });
 
 const sender = await client.addresses.createSender({
-  name: 'OwnAg Sender', email: 'sender@example.com',
+  name: 'OwnAg Sender', email: 'sender@example.com', phone: '+905000000097',
   address1: 'Hasan Mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34', districtName: 'Esenyurt', zip: '34020',
 });
 

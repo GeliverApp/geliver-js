@@ -24,6 +24,6 @@ export class TransactionsResource {
     for (const k of ['length','width','height','weight']) {
       if (payload[k] !== undefined && payload[k] !== null) payload[k] = String(payload[k]);
     }
-    return this.http.request('POST', '/transactions', { body: payload });
+    return this.http.request('POST', '/transactions', { body: { shipment: payload } });
   }
 }

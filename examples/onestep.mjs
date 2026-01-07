@@ -5,12 +5,13 @@ if (!token) { console.error('GELIVER_TOKEN required'); process.exit(1); }
 const client = new GeliverClient({ token });
 
 const sender = await client.addresses.createSender({
-  name: 'OneStep Sender', email: 'sender@example.com',
+  name: 'OneStep Sender', email: 'sender@example.com', phone: '+905000000099',
   address1: 'Hasan Mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34', districtName: 'Esenyurt', zip: '34020',
 });
 
 const tx = await client.transactions.create({
   senderAddressID: sender.id,
+  test: true,
   recipientAddress: {
     name: 'OneStep Recipient', phone: '+905000000000', address1: 'Atatürk Mahallesi', countryCode: 'TR', cityName: 'Istanbul', cityCode: '34', districtName: 'Esenyurt',
   },
