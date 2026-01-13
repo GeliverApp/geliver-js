@@ -1,6 +1,6 @@
 {
   "name": "@geliver/sdk",
-  "version": "0.2.0",
+  "version": "1.2.0",
   "description": "Geliver API SDK (Node.js, TypeScript)",
   "license": "MIT",
   "type": "module",
