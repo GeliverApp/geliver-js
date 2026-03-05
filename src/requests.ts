@@ -46,9 +46,9 @@ export interface UpdatePackageRequest {
 
 export interface CreateReturnShipmentRequest {
   isReturn?: boolean; // forced true by SDK
-  willAccept: boolean;
+  willAccept?: boolean; // optional; defaults to false (create return without auto-accept)
   providerServiceCode?: string; // optional, defaults to original shipment provider
-  count: number;
+  count?: number; // optional, defaults to 1
   // Optional: backend will default to original shipment's recipient address; set to override
   senderAddress?: Pick<Address, 'name' | 'phone' | 'address1' | 'countryCode' | 'cityCode' | 'districtName'>;
 }

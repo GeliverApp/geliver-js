@@ -70,10 +70,11 @@ export class ShipmentsResource {
     return this.http.request('POST', `/shipments/${encodeURIComponent(shipmentID)}`);
   }
 
-  /** Create a return shipment for an existing one (PATCH with isReturn=true). */
+  /** Create a return shipment for an existing one (POST with isReturn=true). */
   createReturn(shipmentID: string, body: CreateReturnShipmentRequest): Promise<Shipment> {
     const payload: any = { ...body, isReturn: true };
-    return this.http.request('PATCH', `/shipments/${encodeURIComponent(shipmentID)}`, { body: payload });
+    if (payload.count === undefined || payload.count === null || payload.count === 0) payload.count = 1;
+    return this.http.request('POST', `/shipments/${encodeURIComponent(shipmentID)}`, { body: payload });
   }
 
   /** Poll until offers are fully generated or timeout. */

@@ -1,6 +1,6 @@
 {
   "name": "@geliver/sdk",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Geliver API SDK (Node.js, TypeScript)",
   "license": "MIT",
   "type": "module",
@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --version && echo 'Run tests with your preferred runner. Unit tests use mock transport.'"
+    "test": "npm run build && node --test test/*.test.mjs"
   },
   "engines": {
     "node": ">=18"
