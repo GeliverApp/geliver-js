@@ -1,6 +1,6 @@
 import { HttpClient } from '../http.js';
 import { Transaction } from '../api-types.js';
-import { CreateShipmentRequest } from '../requests.js';
+import { CreateShipmentRequest, CreateReturnTransactionRequest } from '../requests.js';
 
 type CreateTransactionRequest = {
   shipment: CreateShipmentRequest;
@@ -20,6 +20,15 @@ export class TransactionsResource {
   }
 
   /**
+   * Create a return shipment and purchase the label immediately. Returns the created Transaction.
+   */
+  createReturn(shipmentID: string, body: CreateReturnTransactionRequest): Promise<Transaction> {
+    const payload: any = { ...body, isReturn: true, willAccept: true };
+    if (payload.count === undefined || payload.count === null || payload.count === 0) payload.count = 1;
+    return this.http.request('POST', `/shipments/${encodeURIComponent(shipmentID)}`, { body: payload });
+  }
+
+  /**
    * One-step label purchase: post shipment details directly to /transactions.
    * No accept flow; server creates shipment and returns Transaction.
    */
@@ -31,7 +40,7 @@ export class TransactionsResource {
         : body;
 
     const payload: any = { ...(shipmentBody as any) };
-    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'API';
+    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'SDK';
     if (payload.recipientAddress && !payload.recipientAddress.phone) throw new Error('recipientAddress.phone is required');
     for (const k of ['length','width','height','weight']) {
       if (payload[k] !== undefined && payload[k] !== null) payload[k] = String(payload[k]);

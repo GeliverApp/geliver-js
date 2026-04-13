@@ -9,6 +9,7 @@ import { PricesResource } from './resources/prices.js';
 import { GeoResource } from './resources/geo.js';
 import { OrganizationsResource } from './resources/organizations.js';
 export * from './types.js';
+export * from './api-types.js';
 export * from './webhooks.js';
 export * from './models/index.js';
 

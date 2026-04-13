@@ -12,6 +12,9 @@ export interface ClientOptions {
 }
 
 const DEFAULT_BASE_URL = 'https://api.geliver.io/api/v1';
+// Keep in sync with js/package.json version
+const SDK_VERSION = '1.2.1';
+const DEFAULT_USER_AGENT = `geliver-js/${SDK_VERSION}`;
 
 export class HttpClient {
   readonly baseUrl: string;
@@ -26,7 +29,11 @@ export class HttpClient {
     this.token = opts.token;
     this.timeoutMs = opts.timeoutMs ?? 30000;
     this.maxRetries = opts.maxRetries ?? 2;
-    this.userAgent = opts.userAgent;
+    // In browsers and some edge runtimes, setting `User-Agent` is forbidden.
+    // Only set a default in Node-like environments; users can always override via opts.userAgent.
+    const p = (globalThis as any).process;
+    const isNode = !!(p && p.versions && p.versions.node);
+    this.userAgent = opts.userAgent ?? (isNode ? DEFAULT_USER_AGENT : undefined);
     this.transport = opts.transport ?? (globalThis.fetch?.bind(globalThis) as any);
     if (!this.transport) {
       throw new Error('fetch is not available; provide a custom transport');
@@ -137,7 +144,13 @@ export class HttpClient {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
-      const res = await this.transport(url, { ...init, signal: controller.signal });
+      const nextInit: RequestInit = { ...init, signal: controller.signal };
+      if (this.userAgent) {
+        const h = new Headers(init?.headers as any);
+        if (!h.has('User-Agent')) h.set('User-Agent', this.userAgent);
+        nextInit.headers = h as any;
+      }
+      const res = await this.transport(url, nextInit);
       return res as any;
     } finally {
       clearTimeout(timer);

@@ -11,7 +11,7 @@ export class ShipmentsResource {
    */
   create(body: CreateShipmentRequest): Promise<Shipment> {
     const payload: any = { ...body };
-    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'API';
+    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'SDK';
     if (payload.recipientAddress && !payload.recipientAddress.phone) throw new Error('recipientAddress.phone is required');
     for (const k of ['length','width','height','weight']) {
       if (payload[k] !== undefined && payload[k] !== null) payload[k] = String(payload[k]);
@@ -22,7 +22,7 @@ export class ShipmentsResource {
   /** Create a test shipment easily without modifying your body. */
   createTest(body: Omit<CreateShipmentRequest, 'test'>): Promise<Shipment> {
     const payload: any = { ...(body as any) };
-    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'API';
+    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'SDK';
     if (payload.recipientAddress && !payload.recipientAddress.phone) throw new Error('recipientAddress.phone is required');
     payload.test = true;
     return this.http.request('POST', '/shipments', { body: payload });
@@ -70,9 +70,13 @@ export class ShipmentsResource {
     return this.http.request('POST', `/shipments/${encodeURIComponent(shipmentID)}`);
   }
 
-  /** Create a return shipment for an existing one (POST with isReturn=true). */
+  /** Create a return shipment without purchasing the label yet. Use transactions.createReturn to purchase it immediately. */
   createReturn(shipmentID: string, body: CreateReturnShipmentRequest): Promise<Shipment> {
     const payload: any = { ...body, isReturn: true };
+    if (payload.willAccept === true) {
+      throw new Error('shipments.createReturn does not support willAccept=true; use transactions.createReturn instead');
+    }
+    delete payload.willAccept;
     if (payload.count === undefined || payload.count === null || payload.count === 0) payload.count = 1;
     return this.http.request('POST', `/shipments/${encodeURIComponent(shipmentID)}`, { body: payload });
   }

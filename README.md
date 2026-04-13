@@ -36,7 +36,7 @@ Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu 
 5. Barkod, takip numarası, etiket URL’lerini yanıt içindeki gönderi (shipment) nesnesinden alın
 6. Takip numarası hemen oluşmazsa test gönderilerinde her GET isteği durumun bir adım ilerlemesini sağlar; prod'da webhook kurun
    -7. Etiket dosyasını (PDF) ve dinamik etiketi (HTML) indirin
-7. İade gönderisi oluşturmak isterseniz createReturn fonksiyonunu kullanın
+7. İadeyi oluşturup etiketi henüz satın almamak için `shipments.createReturn`; iadeyi oluşturup etiketi hemen satın almak için `transactions.createReturn` kullanın
 
 ## Yapılandırma
 
@@ -229,17 +229,30 @@ console.log(
 
 ```ts
 const returned = await client.shipments.createReturn(created.id, {
-  willAccept: true,
   providerServiceCode: "SURAT_STANDART",
 });
+console.log(returned.id);
 ```
 
 Not:
 
-- `willAccept` alanı opsiyoneldir (varsayılan `false`). `true` ise backend iade için uygun teklifi otomatik kabul eder (etiket satın alma). `false` ise sadece iade shipment’i oluşturur; daha sonra `client.transactions.acceptOffer(offerID)` ile kabul edebilirsiniz.
+- `shipments.createReturn(...)` iadeyi oluşturur, etiketi satın almaz ve `Shipment` döner.
+- Etiketi daha sonra satın almak isterseniz, teklif hazır olduğunda normal satın alma akışını `transactions.acceptOffer(...)` ile kullanabilirsiniz.
 - `providerServiceCode` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin sağlayıcısı kullanılır; isterseniz bu alanı vererek değiştirebilirsiniz.
 - `senderAddress` alanı opsiyoneldir. Varsayılan olarak orijinal gönderinin alıcı adresi kullanılır; isterseniz `senderAddress` vererek değiştirebilirsiniz.
 - `count` alanı opsiyoneldir (varsayılan `1`). Bu fonksiyon “tek shipment için tek iade” akışı içindir; genelde `1` kullanılmalıdır.
+
+İadeyi oluşturup etiketi hemen satın almak için:
+
+```ts
+const tx = await client.transactions.createReturn(created.id, {
+  providerServiceCode: "SURAT_STANDART",
+});
+console.log(tx.id); // transaction id
+console.log(tx.shipment?.id); // return shipment id, API döndürüyorsa
+```
+
+- `transactions.createReturn(...)` iadeyi oluşturur, etiketi hemen satın alır ve `Transaction` döner.
 
 ## Webhooklar
 
@@ -290,10 +303,14 @@ const list = await client.webhooks.list();
 ## Örnekler
 
 - Full flow: `examples/full-flow.mjs`
+- İade oluştur, etiketi sonra satın al: `examples/return-shipment.mjs`
+- İade oluştur, etiketi hemen satın al: `examples/return-transaction.mjs`
 - Tek aşamada gönderi (Create Transaction): `examples/onestep.mjs`
 - Kapıda ödeme: `examples/pod.mjs`
 - Kendi anlaşmanızla etiket satın alma: `examples/ownagreement.mjs`
 - Üretilmiş tipler `@geliver/sdk` altında (kaynak: `src/models`).
+
+İade örnekleri mevcut ve iade edilebilir bir shipment ID bekler. ID'yi `GELIVER_RETURN_SHIPMENT_ID` ile veya ilk komut satırı argümanı olarak verebilirsiniz.
 
 ### Manuel takip kontrolü (isteğe bağlı)
 

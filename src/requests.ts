@@ -30,7 +30,7 @@ export interface CreateShipmentRequestBase {
   productPaymentOnDelivery?: boolean; // kapıda ödeme
   test?: boolean; // per-shipment test flag
   order?: {
-    sourceCode?: string; // defaulted to "API" by SDK when order is present
+    sourceCode?: string; // defaulted to "SDK" by SDK when order is present
     sourceIdentifier?: string;
     orderNumber: string;
     totalAmount?: string | number;
@@ -46,9 +46,15 @@ export interface UpdatePackageRequest {
 
 export interface CreateReturnShipmentRequest {
   isReturn?: boolean; // forced true by SDK
-  willAccept?: boolean; // optional; defaults to false (create return without auto-accept)
   providerServiceCode?: string; // optional, defaults to original shipment provider
   count?: number; // optional, defaults to 1
   // Optional: backend will default to original shipment's recipient address; set to override
+  senderAddress?: Pick<Address, 'name' | 'phone' | 'address1' | 'countryCode' | 'cityCode' | 'districtName'>;
+}
+
+export interface CreateReturnTransactionRequest {
+  isReturn?: boolean; // forced true by SDK
+  providerServiceCode?: string;
+  count?: number;
   senderAddress?: Pick<Address, 'name' | 'phone' | 'address1' | 'countryCode' | 'cityCode' | 'districtName'>;
 }

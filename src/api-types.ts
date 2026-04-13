@@ -60,7 +60,8 @@ export interface OrganizationBalance {
 export interface Transaction {
   id: string;
   isPayed?: boolean;
-  offerID: string;
+  offerID?: string;
+  shipmentID?: string;
+  transactionType?: string;
   shipment?: import('./models/index.js').Shipment;
 }
-
