@@ -6,6 +6,7 @@ Geliver JS SDK — official TypeScript/Node.js client for Geliver Kargo Pazaryer
 Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu sağlar.
 
 • Dokümantasyon (TR/EN): https://docs.geliver.io
+• Değişiklik geçmişi: `CHANGELOG.md`
 
 ---
 
