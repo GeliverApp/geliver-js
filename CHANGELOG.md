@@ -13,7 +13,7 @@ This file documents notable changes in the SDK.
 
 ### 1.4.0
 
-- `shipments.create(...)` ile referans gönderi olmadan `isReturn: true`, satır içi müşteri `senderAddress` ve kayıtlı `recipientAddressID` desteklenir.
+- `shipments.create(...)` ile referans gönderi olmadan `isReturn: true` ve gönderici/alıcı için bağımsız ID veya satır içi adres seçimi desteklenir.
 - `examples/incoming-shipment.mjs` eklendi.
 
 ### 1.3.0
@@ -35,7 +35,7 @@ This file documents notable changes in the SDK.
 
 ### 1.4.0
 
-- `shipments.create(...)` supports independent incoming returns with `isReturn: true`, an inline customer `senderAddress`, and a saved `recipientAddressID`.
+- `shipments.create(...)` supports independent incoming returns with `isReturn: true` and either an address ID or an inline address for each side.
 - Added `examples/incoming-shipment.mjs`.
 
 ### 1.3.0

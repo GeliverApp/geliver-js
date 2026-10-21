@@ -18,8 +18,8 @@ export interface CreateAddressRequest {
 }
 
 export type RecipientSpecifier =
-  | { recipientAddressID: string }
-  | { recipientAddress: Address };
+  | { recipientAddressID: string; recipientAddress?: never }
+  | { recipientAddress: Address; recipientAddressID?: never };
 
 export type SenderSpecifier =
   | { senderAddressID: string; senderAddress?: never }

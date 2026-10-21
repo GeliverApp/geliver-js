@@ -7,7 +7,7 @@ export class ShipmentsResource {
   constructor(private http: HttpClient) {}
 
   /**
-   * Create a shipment. You can specify recipient either by `recipientAddressID` or an inline `recipientAddress`.
+   * Create a shipment. Specify each side by its address ID or an inline address.
    */
   create(body: CreateShipmentRequest): Promise<Shipment> {
     const payload: any = { ...body };

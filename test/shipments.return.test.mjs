@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { ShipmentsResource } from '../dist/resources/shipments.js';
 import { TransactionsResource } from '../dist/resources/transactions.js';
 
-test('shipments.create sends independent incoming addresses without swapping them', async () => {
+test('shipments.create supports all incoming address combinations without swapping them', async () => {
   const calls = [];
   const shipments = new ShipmentsResource({
     request: async (method, path, opts) => {
@@ -13,18 +13,22 @@ test('shipments.create sends independent incoming addresses without swapping the
     },
   });
 
-  await shipments.create({
-    isReturn: true,
-    senderAddress: { name: 'Customer', phone: '+905051234567', address1: 'A' },
-    recipientAddressID: 'merchant-1',
-  });
+  const senders = [
+    { senderAddressID: 'customer-1' },
+    { senderAddress: { name: 'Customer', phone: '+905051234567', address1: 'A' } },
+  ];
+  const recipients = [
+    { recipientAddressID: 'merchant-1' },
+    { recipientAddress: { name: 'Merchant', phone: '+905051234568', address1: 'B' } },
+  ];
 
-  assert.equal(calls[0].method, 'POST');
-  assert.equal(calls[0].path, '/shipments');
-  assert.equal(calls[0].body.isReturn, true);
-  assert.equal(calls[0].body.senderAddress.name, 'Customer');
-  assert.equal(calls[0].body.recipientAddressID, 'merchant-1');
-  assert.equal('senderAddressID' in calls[0].body, false);
+  for (const sender of senders) {
+    for (const recipient of recipients) {
+      const body = { isReturn: true, ...sender, ...recipient };
+      await shipments.create(body);
+      assert.deepEqual(calls.at(-1), { method: 'POST', path: '/shipments', body });
+    }
+  }
 });
 
 test('shipments.createReturn uses POST and sets defaults', async () => {
