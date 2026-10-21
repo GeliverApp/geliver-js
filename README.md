@@ -228,7 +228,7 @@ console.log(
 
 ## Referans gönderi olmadan kargo bana gelecek
 
-Müşteriden size gelecek yeni gönderi için normal `shipments.create` çağrısında `isReturn: true` gönderin. Gönderici için `senderAddressID` veya satır içi `senderAddress`; alıcı için `recipientAddressID` veya satır içi `recipientAddress` kullanabilirsiniz. Dört kombinasyon da desteklenir; her taraf için yalnızca bir adres seçin. `isReturn` adresleri otomatik değiştirmez. Aşağıdaki örnekte müşteri adresi satır içi, sizin adresiniz kayıtlıdır. `test: true` örneği test gönderisi olarak oluşturur; canlı gönderide kaldırın.
+Müşteriden size gelecek yeni gönderi için normal `shipments.create` çağrısında `isReturn: true` gönderin. Gönderici için `senderAddressID` veya satır içi `senderAddress`; alıcı için `recipientAddressID` veya satır içi `recipientAddress` kullanabilirsiniz. Dört kombinasyon da desteklenir; her taraf için yalnızca bir adres seçin. Bu kural normal ve iade dahil tüm yeni gönderilerde ve tek adım etiket satın alma akışında geçerlidir. `isReturn` adresleri otomatik değiştirmez. Aşağıdaki örnekte müşteri adresi satır içi, sizin adresiniz kayıtlıdır. `test: true` örneği test gönderisi olarak oluşturur; canlı gönderide kaldırın.
 
 ```ts
 const shipment = await client.shipments.create({

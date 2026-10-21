@@ -31,6 +31,27 @@ test('shipments.create supports all incoming address combinations without swappi
   }
 });
 
+test('all new shipment flows require one address selection per side', () => {
+  let calls = 0;
+  const http = { request: async () => { calls += 1; return { id: 'unexpected' }; } };
+  const shipments = new ShipmentsResource(http);
+  const transactions = new TransactionsResource(http);
+  const base = { senderAddressID: 'customer-1', recipientAddressID: 'merchant-1' };
+  const invalid = [
+    { ...base, senderAddressID: undefined },
+    { ...base, senderAddress: { address1: 'A' } },
+    { ...base, recipientAddressID: undefined },
+    { ...base, recipientAddress: { address1: 'B', phone: '+905051234568' } },
+  ];
+
+  for (const body of invalid) {
+    assert.throws(() => shipments.create(body), /exactly one/);
+    assert.throws(() => shipments.createTest(body), /exactly one/);
+    assert.throws(() => transactions.create(body), /exactly one/);
+  }
+  assert.equal(calls, 0);
+});
+
 test('shipments.createReturn uses POST and sets defaults', async () => {
   const calls = [];
   const http = {
