@@ -39,6 +39,10 @@ Türkiye’nin e‑ticaret gönderim altyapısı için kolay kargo entegrasyonu 
    -7. Etiket dosyasını (PDF) ve dinamik etiketi (HTML) indirin
 7. İadeyi oluşturup etiketi henüz satın almamak için `shipments.createReturn`; iadeyi oluşturup etiketi hemen satın almak için `transactions.createReturn` kullanın
 
+### Gönderi adresi seçimi
+
+Yeni gönderide gönderici için `senderAddressID` veya satır içi `senderAddress`; alıcı için `recipientAddressID` veya satır içi `recipientAddress` verin. Dört kombinasyon da desteklenir; her taraf için yalnızca bir adres seçin. Bu kural normal ve iade dahil tüm yeni gönderilerde ve tek adım etiket satın alma akışında geçerlidir.
+
 ## Yapılandırma
 
 - `baseUrl` default `https://api.geliver.io/api/v1`
@@ -228,7 +232,7 @@ console.log(
 
 ## Referans gönderi olmadan kargo bana gelecek
 
-Müşteriden size gelecek yeni gönderi için normal `shipments.create` çağrısında `isReturn: true` gönderin. Gönderici için `senderAddressID` veya satır içi `senderAddress`; alıcı için `recipientAddressID` veya satır içi `recipientAddress` kullanabilirsiniz. Dört kombinasyon da desteklenir; her taraf için yalnızca bir adres seçin. Bu kural normal ve iade dahil tüm yeni gönderilerde ve tek adım etiket satın alma akışında geçerlidir. `isReturn` adresleri otomatik değiştirmez. Aşağıdaki örnekte müşteri adresi satır içi, sizin adresiniz kayıtlıdır. `test: true` örneği test gönderisi olarak oluşturur; canlı gönderide kaldırın.
+Müşteriden size gelecek yeni gönderi için normal `shipments.create` çağrısında `isReturn: true` gönderin. `isReturn` adresleri otomatik değiştirmez. Aşağıdaki örnekte müşteri adresi satır içi, sizin adresiniz kayıtlıdır. `test: true` örneği test gönderisi olarak oluşturur; canlı gönderide kaldırın.
 
 ```ts
 const shipment = await client.shipments.create({
