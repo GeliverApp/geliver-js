@@ -51,7 +51,7 @@ export interface UpdatePackageRequest {
 
 export interface CreateReturnShipmentRequest {
   isReturn?: boolean; // forced true by SDK
-  providerServiceCode?: string; // optional, defaults to original shipment provider
+  providerServiceCode?: string; // ignored for shipment-only returns; select a provider when purchasing the label
   count?: number; // optional, defaults to 1
   // Optional: backend will default to original shipment's recipient address; set to override
   senderAddress?: Pick<Address, 'name' | 'phone' | 'address1' | 'countryCode' | 'cityCode' | 'districtName'>;

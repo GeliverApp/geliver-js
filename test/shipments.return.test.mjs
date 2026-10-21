@@ -103,6 +103,29 @@ test('shipments.createReturn rejects willAccept=true', async () => {
   assert.equal(calls.length, 0);
 });
 
+test('both createReturn flows forward the customer senderAddress without swapping it', async () => {
+  const calls = [];
+  const http = { request: async (method, path, opts) => {
+    calls.push({ method, path, body: opts.body });
+    return { id: 'return-1' };
+  } };
+  const customer = { name: 'Customer', phone: '+905051234567', address1: 'Pickup address' };
+
+  await new ShipmentsResource(http).createReturn('original-1', { senderAddress: customer });
+  await new TransactionsResource(http).createReturn('original-1', { senderAddress: customer });
+
+  for (const call of calls) {
+    assert.equal(call.method, 'POST');
+    assert.equal(call.path, '/shipments/original-1');
+    assert.deepEqual(call.body.senderAddress, customer);
+    assert.equal('recipientAddress' in call.body, false);
+    assert.equal('recipientAddressID' in call.body, false);
+    assert.equal(call.body.isReturn, true);
+  }
+  assert.equal(calls[0].body.willAccept, undefined);
+  assert.equal(calls[1].body.willAccept, true);
+});
+
 test('transactions.createReturn forces willAccept and sets defaults', async () => {
   const calls = [];
   const http = {
