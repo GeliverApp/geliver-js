@@ -6,10 +6,15 @@ This file documents notable changes in the SDK.
 
 ## Sürüm / Version
 
-- Türkçe: Bu değişiklikler `1.3.0` sürümünde yer alır.
-- English: These changes are included in version `1.3.0`.
+- Türkçe: Bu değişiklikler `1.4.0` sürümünde yer alır.
+- English: These changes are included in version `1.4.0`.
 
 ## Türkçe
+
+### 1.4.0
+
+- `shipments.create(...)` ile referans gönderi olmadan `isReturn: true`, satır içi müşteri `senderAddress` ve kayıtlı `recipientAddressID` desteklenir.
+- `examples/incoming-shipment.mjs` eklendi.
 
 ### 1.3.0
 
@@ -27,6 +32,11 @@ This file documents notable changes in the SDK.
 - README örnekleri, etiketin daha sonra `transactions.acceptOffer(...)` ile satın alınabileceğini açıklar.
 
 ## English
+
+### 1.4.0
+
+- `shipments.create(...)` supports independent incoming returns with `isReturn: true`, an inline customer `senderAddress`, and a saved `recipientAddressID`.
+- Added `examples/incoming-shipment.mjs`.
 
 ### 1.3.0
 

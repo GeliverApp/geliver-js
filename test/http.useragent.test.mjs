@@ -25,6 +25,6 @@ test('http sets default User-Agent in Node', async () => {
         ? headers.find(([k]) => String(k).toLowerCase() === 'user-agent')?.[1]
         : headers?.['User-Agent'] ?? headers?.['user-agent'];
 
-  assert.equal(ua, 'geliver-js/1.2.1');
+  assert.equal(ua, 'geliver-js/1.4.0');
 });
 

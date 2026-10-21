@@ -12,8 +12,8 @@ const shipment = await client.shipments.create({
   isReturn: true,
   test: true,
   senderAddress: {
-    name: 'Müşteri Adı', phone: '+905051234567',
-    address1: 'Örnek Mahallesi 1', countryCode: 'TR', cityCode: '34', districtName: 'Kadıköy',
+    name: 'Müşteri Adı', email: 'customer@example.com', phone: '+905051234567',
+    address1: 'Örnek Mahallesi 1', countryCode: 'TR', cityCode: '34', districtName: 'Kadıköy', zip: '34000',
   },
   recipientAddressID,
   length: '10', width: '10', height: '10', distanceUnit: 'cm', weight: '1', massUnit: 'kg',
