@@ -23,7 +23,8 @@ export type RecipientSpecifier =
 
 export type SenderSpecifier =
   | { senderAddressID: string; senderAddress?: never }
-  | { senderAddress: Address; senderAddressID?: never };
+  | { senderAddress: Address; senderAddressID?: never }
+  | { senderAddressID?: never; senderAddress?: never };
 
 export interface CreateShipmentRequestBase {
   length?: string; width?: string; height?: string; distanceUnit?: string;
@@ -32,7 +33,7 @@ export interface CreateShipmentRequestBase {
   providerAccountID?: string; // own agreement (provider account)
   productPaymentOnDelivery?: boolean; // kapıda ödeme
   test?: boolean; // per-shipment test flag
-  isReturn?: boolean; // independent incoming shipment; addresses are not swapped automatically
+  isReturn?: boolean; // backend reverses the delivery direction for incoming shipments
   order?: {
     sourceCode?: string; // defaulted to "SDK" by SDK when order is present
     sourceIdentifier?: string;

@@ -13,7 +13,7 @@ This file documents notable changes in the SDK.
 
 ### 1.4.0
 
-- Tüm yeni gönderilerde gönderici ve alıcı için adres ID veya satır içi adresin tam olarak biri doğrulanır.
+- Tüm yeni gönderilerde alıcı adresi zorunludur; gönderici adresi verilmezse kurumun varsayılan gönderici adresi kullanılır.
 - `shipments.create(...)` ile referans gönderi olmadan `isReturn: true` ve gönderici/alıcı için bağımsız ID veya satır içi adres seçimi desteklenir.
 - `examples/incoming-shipment.mjs` eklendi.
 
@@ -36,8 +36,8 @@ This file documents notable changes in the SDK.
 
 ### 1.4.0
 
-- All new shipment flows validate that each side provides exactly one address ID or inline address.
-- `shipments.create(...)` supports independent incoming returns with `isReturn: true` and either an address ID or an inline address for each side.
+- All new shipments require a recipient address; the organization default sender address is used when no sender is provided.
+- `shipments.create(...)` supports independent incoming returns with `isReturn: true`; the backend reverses the delivery direction for carriers.
 - Added `examples/incoming-shipment.mjs`.
 
 ### 1.3.0

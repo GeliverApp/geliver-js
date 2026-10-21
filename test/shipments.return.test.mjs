@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { ShipmentsResource } from '../dist/resources/shipments.js';
 import { TransactionsResource } from '../dist/resources/transactions.js';
 
-test('shipments.create supports all incoming address combinations without swapping them', async () => {
+test('shipments.create accepts merchant and customer address options for returns', async () => {
   const calls = [];
   const shipments = new ShipmentsResource({
     request: async (method, path, opts) => {
@@ -14,12 +14,13 @@ test('shipments.create supports all incoming address combinations without swappi
   });
 
   const senders = [
-    { senderAddressID: 'customer-1' },
-    { senderAddress: { name: 'Customer', phone: '+905051234567', address1: 'A' } },
+    {},
+    { senderAddressID: 'merchant-1' },
+    { senderAddress: { name: 'Merchant', phone: '+905051234567', address1: 'A' } },
   ];
   const recipients = [
-    { recipientAddressID: 'merchant-1' },
-    { recipientAddress: { name: 'Merchant', phone: '+905051234568', address1: 'B' } },
+    { recipientAddressID: 'customer-1' },
+    { recipientAddress: { name: 'Customer', phone: '+905051234568', address1: 'B' } },
   ];
 
   for (const sender of senders) {
@@ -31,14 +32,13 @@ test('shipments.create supports all incoming address combinations without swappi
   }
 });
 
-test('all new shipment flows require one address selection per side', () => {
+test('all new shipment flows require a recipient and allow a default sender', async () => {
   let calls = 0;
   const http = { request: async () => { calls += 1; return { id: 'unexpected' }; } };
   const shipments = new ShipmentsResource(http);
   const transactions = new TransactionsResource(http);
-  const base = { senderAddressID: 'customer-1', recipientAddressID: 'merchant-1' };
+  const base = { senderAddressID: 'merchant-1', recipientAddressID: 'customer-1' };
   const invalid = [
-    { ...base, senderAddressID: undefined },
     { ...base, senderAddress: { address1: 'A' } },
     { ...base, recipientAddressID: undefined },
     { ...base, recipientAddress: { address1: 'B', phone: '+905051234568' } },
@@ -50,6 +50,11 @@ test('all new shipment flows require one address selection per side', () => {
     assert.throws(() => transactions.create(body), /exactly one/);
   }
   assert.equal(calls, 0);
+
+  await shipments.create({ recipientAddressID: 'customer-1' });
+  await shipments.createTest({ recipientAddressID: 'customer-1' });
+  await transactions.create({ recipientAddressID: 'customer-1' });
+  assert.equal(calls, 3);
 });
 
 test('shipments.createReturn uses POST and sets defaults', async () => {
