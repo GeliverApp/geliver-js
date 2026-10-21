@@ -4,6 +4,29 @@ import assert from 'node:assert/strict';
 import { ShipmentsResource } from '../dist/resources/shipments.js';
 import { TransactionsResource } from '../dist/resources/transactions.js';
 
+test('shipments.create sends independent incoming addresses without swapping them', async () => {
+  const calls = [];
+  const shipments = new ShipmentsResource({
+    request: async (method, path, opts) => {
+      calls.push({ method, path, body: opts.body });
+      return { id: 'incoming-1' };
+    },
+  });
+
+  await shipments.create({
+    isReturn: true,
+    senderAddress: { name: 'Customer', phone: '+905051234567', address1: 'A' },
+    recipientAddressID: 'merchant-1',
+  });
+
+  assert.equal(calls[0].method, 'POST');
+  assert.equal(calls[0].path, '/shipments');
+  assert.equal(calls[0].body.isReturn, true);
+  assert.equal(calls[0].body.senderAddress.name, 'Customer');
+  assert.equal(calls[0].body.recipientAddressID, 'merchant-1');
+  assert.equal('senderAddressID' in calls[0].body, false);
+});
+
 test('shipments.createReturn uses POST and sets defaults', async () => {
   const calls = [];
   const http = {

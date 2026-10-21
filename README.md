@@ -226,7 +226,26 @@ console.log(
 );
 ```
 
-## İade Gönderisi Oluşturun
+## Referans gönderi olmadan kargo bana gelecek
+
+Müşteriden size gelecek yeni gönderi için normal `shipments.create` çağrısında `isReturn: true` gönderin. `senderAddress` müşterinin çıkış adresi, `recipientAddressID` sizin kayıtlı alıcı adresinizdir. `isReturn` adresleri otomatik değiştirmez. `test: true` örneği test gönderisi olarak oluşturur; canlı gönderide kaldırın.
+
+```ts
+const shipment = await client.shipments.create({
+  isReturn: true,
+  test: true,
+  senderAddress: {
+    name: 'Müşteri Adı', phone: '+905051234567',
+    address1: 'Örnek Mahallesi 1', countryCode: 'TR', cityCode: '34', districtName: 'Kadıköy',
+  },
+  recipientAddressID: merchantAddressID,
+  length: '10', width: '10', height: '10', distanceUnit: 'cm', weight: '1', massUnit: 'kg',
+});
+```
+
+Çalıştırılabilir örnek: `GELIVER_TOKEN=... GELIVER_MERCHANT_ADDRESS_ID=... node examples/incoming-shipment.mjs` (`npm run build` sonrasında). Bu çağrı gönderiyi oluşturur; etiketi satın almak için teklif kabul akışını kullanın.
+
+## Var olan gönderiye bağlı iade oluşturun
 
 ```ts
 const returned = await client.shipments.createReturn(created.id, {

@@ -21,14 +21,18 @@ export type RecipientSpecifier =
   | { recipientAddressID: string }
   | { recipientAddress: Address };
 
+export type SenderSpecifier =
+  | { senderAddressID: string; senderAddress?: never }
+  | { senderAddress: Address; senderAddressID?: never };
+
 export interface CreateShipmentRequestBase {
-  senderAddressID: string;
   length?: string; width?: string; height?: string; distanceUnit?: string;
   weight?: string; massUnit?: string;
   providerServiceCode?: string; // optional direct provider
   providerAccountID?: string; // own agreement (provider account)
   productPaymentOnDelivery?: boolean; // kapıda ödeme
   test?: boolean; // per-shipment test flag
+  isReturn?: boolean; // independent incoming shipment; addresses are not swapped automatically
   order?: {
     sourceCode?: string; // defaulted to "SDK" by SDK when order is present
     sourceIdentifier?: string;
@@ -38,7 +42,7 @@ export interface CreateShipmentRequestBase {
   };
 }
 
-export type CreateShipmentRequest = CreateShipmentRequestBase & RecipientSpecifier;
+export type CreateShipmentRequest = CreateShipmentRequestBase & SenderSpecifier & RecipientSpecifier;
 
 export interface UpdatePackageRequest {
   height?: string; width?: string; length?: string; distanceUnit?: string; weight?: string; massUnit?: string;
