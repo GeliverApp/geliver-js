@@ -2,15 +2,17 @@ import { HttpClient } from '../http.js';
 import { ListParams } from '../types.js';
 import { Shipment } from '../models/index.js';
 import { CreateShipmentRequest, UpdatePackageRequest, CreateReturnShipmentRequest } from '../requests.js';
+import { validateShipmentAddresses } from './shipment-addresses.js';
 
 export class ShipmentsResource {
   constructor(private http: HttpClient) {}
 
   /**
-   * Create a shipment. You can specify recipient either by `recipientAddressID` or an inline `recipientAddress`.
+   * Create a shipment. Recipient address is required; sender defaults to the organization's address.
    */
   create(body: CreateShipmentRequest): Promise<Shipment> {
     const payload: any = { ...body };
+    validateShipmentAddresses(payload);
     if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'SDK';
     if (payload.recipientAddress && !payload.recipientAddress.phone) throw new Error('recipientAddress.phone is required');
     for (const k of ['length','width','height','weight']) {
@@ -21,11 +23,7 @@ export class ShipmentsResource {
 
   /** Create a test shipment easily without modifying your body. */
   createTest(body: Omit<CreateShipmentRequest, 'test'>): Promise<Shipment> {
-    const payload: any = { ...(body as any) };
-    if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'SDK';
-    if (payload.recipientAddress && !payload.recipientAddress.phone) throw new Error('recipientAddress.phone is required');
-    payload.test = true;
-    return this.http.request('POST', '/shipments', { body: payload });
+    return this.create({ ...body, test: true } as CreateShipmentRequest);
   }
 
   /** Get shipment by ID. */

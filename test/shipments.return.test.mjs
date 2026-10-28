@@ -4,6 +4,59 @@ import assert from 'node:assert/strict';
 import { ShipmentsResource } from '../dist/resources/shipments.js';
 import { TransactionsResource } from '../dist/resources/transactions.js';
 
+test('shipments.create accepts merchant and customer address options for returns', async () => {
+  const calls = [];
+  const shipments = new ShipmentsResource({
+    request: async (method, path, opts) => {
+      calls.push({ method, path, body: opts.body });
+      return { id: 'incoming-1' };
+    },
+  });
+
+  const senders = [
+    {},
+    { senderAddressID: 'merchant-1' },
+    { senderAddress: { name: 'Merchant', phone: '+905051234567', address1: 'A' } },
+  ];
+  const recipients = [
+    { recipientAddressID: 'customer-1' },
+    { recipientAddress: { name: 'Customer', phone: '+905051234568', address1: 'B' } },
+  ];
+
+  for (const sender of senders) {
+    for (const recipient of recipients) {
+      const body = { isReturn: true, ...sender, ...recipient };
+      await shipments.create(body);
+      assert.deepEqual(calls.at(-1), { method: 'POST', path: '/shipments', body });
+    }
+  }
+});
+
+test('all new shipment flows require a recipient and allow a default sender', async () => {
+  let calls = 0;
+  const http = { request: async () => { calls += 1; return { id: 'unexpected' }; } };
+  const shipments = new ShipmentsResource(http);
+  const transactions = new TransactionsResource(http);
+  const base = { senderAddressID: 'merchant-1', recipientAddressID: 'customer-1' };
+  const invalid = [
+    { ...base, senderAddress: { address1: 'A' } },
+    { ...base, recipientAddressID: undefined },
+    { ...base, recipientAddress: { address1: 'B', phone: '+905051234568' } },
+  ];
+
+  for (const body of invalid) {
+    assert.throws(() => shipments.create(body), /exactly one/);
+    assert.throws(() => shipments.createTest(body), /exactly one/);
+    assert.throws(() => transactions.create(body), /exactly one/);
+  }
+  assert.equal(calls, 0);
+
+  await shipments.create({ recipientAddressID: 'customer-1' });
+  await shipments.createTest({ recipientAddressID: 'customer-1' });
+  await transactions.create({ recipientAddressID: 'customer-1' });
+  assert.equal(calls, 3);
+});
+
 test('shipments.createReturn uses POST and sets defaults', async () => {
   const calls = [];
   const http = {

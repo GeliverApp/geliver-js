@@ -6,10 +6,16 @@ This file documents notable changes in the SDK.
 
 ## Sürüm / Version
 
-- Türkçe: Bu değişiklikler `1.3.0` sürümünde yer alır.
-- English: These changes are included in version `1.3.0`.
+- Türkçe: Bu değişiklikler `1.4.0` sürümünde yer alır.
+- English: These changes are included in version `1.4.0`.
 
 ## Türkçe
+
+### 1.4.0
+
+- Tüm yeni gönderilerde alıcı adresi zorunludur; gönderici adresi verilmezse kurumun varsayılan gönderici adresi kullanılır.
+- `shipments.create(...)` ile referans gönderi olmadan `isReturn: true` ve gönderici/alıcı için bağımsız ID veya satır içi adres seçimi desteklenir.
+- `examples/incoming-shipment.mjs` eklendi.
 
 ### 1.3.0
 
@@ -27,6 +33,12 @@ This file documents notable changes in the SDK.
 - README örnekleri, etiketin daha sonra `transactions.acceptOffer(...)` ile satın alınabileceğini açıklar.
 
 ## English
+
+### 1.4.0
+
+- All new shipments require a recipient address; the organization default sender address is used when no sender is provided.
+- `shipments.create(...)` supports independent incoming returns with `isReturn: true`; the backend reverses the delivery direction for carriers.
+- Added `examples/incoming-shipment.mjs`.
 
 ### 1.3.0
 

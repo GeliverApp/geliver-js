@@ -13,7 +13,7 @@ export interface ClientOptions {
 
 const DEFAULT_BASE_URL = 'https://api.geliver.io/api/v1';
 // Keep in sync with js/package.json version
-const SDK_VERSION = '1.2.1';
+const SDK_VERSION = '1.4.0';
 const DEFAULT_USER_AGENT = `geliver-js/${SDK_VERSION}`;
 
 export class HttpClient {

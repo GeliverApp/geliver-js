@@ -1,6 +1,7 @@
 import { HttpClient } from '../http.js';
 import { Transaction } from '../api-types.js';
 import { CreateShipmentRequest, CreateReturnTransactionRequest } from '../requests.js';
+import { validateShipmentAddresses } from './shipment-addresses.js';
 
 type CreateTransactionRequest = {
   shipment: CreateShipmentRequest;
@@ -40,6 +41,7 @@ export class TransactionsResource {
         : body;
 
     const payload: any = { ...(shipmentBody as any) };
+    validateShipmentAddresses(payload);
     if (payload.order && !payload.order.sourceCode) payload.order.sourceCode = 'SDK';
     if (payload.recipientAddress && !payload.recipientAddress.phone) throw new Error('recipientAddress.phone is required');
     for (const k of ['length','width','height','weight']) {
